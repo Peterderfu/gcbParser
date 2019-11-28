@@ -1,0 +1,47 @@
+GCB_Fortinet_Fortigate_01,config system interface,edit "wan1",set allowaccess ping fgfm
+GCB_Fortinet_Fortigate_02,config system interface,edit "wan1",set description "FTTB 10m/10m"
+GCB_Fortinet_Fortigate_03,config system interface,edit "wan1",set broadcast-forward disable
+GCB_Fortinet_Fortigate_04,None
+GCB_Fortinet_Fortigate_05,None
+GCB_Fortinet_Fortigate_06,None
+GCB_Fortinet_Fortigate_07,None
+GCB_Fortinet_Fortigate_08,None
+GCB_Fortinet_Fortigate_09,None
+GCB_Fortinet_Fortigate_10,None
+GCB_Fortinet_Fortigate_11,None
+GCB_Fortinet_Fortigate_12,None
+GCB_Fortinet_Fortigate_13,None
+GCB_Fortinet_Fortigate_14,None
+GCB_Fortinet_Fortigate_15,None
+GCB_Fortinet_Fortigate_16,None
+GCB_Fortinet_Fortigate_17,None
+GCB_Fortinet_Fortigate_18,config system ntp,set ntpsync enable
+GCB_Fortinet_Fortigate_19,None
+GCB_Fortinet_Fortigate_20,None
+GCB_Fortinet_Fortigate_21,None
+GCB_Fortinet_Fortigate_22,None
+GCB_Fortinet_Fortigate_23,None
+GCB_Fortinet_Fortigate_24,None
+GCB_Fortinet_Fortigate_25,None
+GCB_Fortinet_Fortigate_26,None
+GCB_Fortinet_Fortigate_27,None
+GCB_Fortinet_Fortigate_28,config system global,set admin-https-redirect enable
+GCB_Fortinet_Fortigate_29,config system global,set admin-lockout-threshold 3
+GCB_Fortinet_Fortigate_30,None
+GCB_Fortinet_Fortigate_31,config system global,set hostname "AAAAA"
+GCB_Fortinet_Fortigate_32,None
+GCB_Fortinet_Fortigate_33,None
+GCB_Fortinet_Fortigate_34,None
+GCB_Fortinet_Fortigate_35,None
+GCB_Fortinet_Fortigate_36,None
+GCB_Fortinet_Fortigate_37,None
+GCB_Fortinet_Fortigate_38,None
+GCB_Fortinet_Fortigate_39,None
+GCB_Fortinet_Fortigate_40,None
+GCB_Fortinet_Fortigate_41,None
+GCB_Fortinet_Fortigate_42,None
+GCB_Fortinet_Fortigate_43,None
+GCB_Fortinet_Fortigate_44,None
+GCB_Fortinet_Fortigate_45,None
+GCB_Fortinet_Fortigate_46,None
+GCB_Fortinet_Fortigate_47,None
