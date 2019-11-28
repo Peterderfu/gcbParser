@@ -1,79 +1,105 @@
-#ref https://python-statemachine.readthedocs.io/en/latest/readme.html
-from statemachine import StateMachine, State
-from statemachine.statemachine import Transition
+# -*- coding: utf-8 -*-
+import sys,re
+from lib.treelib import Tree  #https://treelib.readthedocs.io/en/latest/
+CONFIG_FILE = "input/FortiGate100D_config.txt"
+GCB_PATTERN = "input/GCB_FortiGate.txt"
+LEADING_SPACE = " " * 4
+def readValidcmd(patterns):
+    out = set()
+    for line in patterns:
+        out.add(line[-1].split(",")[0])
+    return out
+def isnt_root(node):
+    return not (node.identifier == "root")
+def getLevel(line):
+    return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
+def gcb_search(nodes):
+    for n in nodes:
+        if n.tag == "config system global":
+            assert(n)
+def readPatterns(f):
+    out = []
+    for line in f.readlines():
+        out.append(line.split(",",maxsplit=1))
+    return out
+def recognizeGCB(gcbIndex,confPattern,root):
+    out = None
+    curNode = root
+    if True:#gcbIndex == "GCB_Fortinet_Fortigate_01":
+        for cmd in confPattern.strip().split(","):
+            match = flagFuzzyMatch = False
+            if re.search('.*<.*>.*',cmd):
+                cmd = re.search('.*(?=<)',cmd).group(0)
+                flagFuzzyMatch = True
+            for child in tree.children(curNode.identifier):
+                match = child.tag.startswith(cmd) if flagFuzzyMatch else (cmd == child.tag)
+                if match:
+                    curNode = child
+                    break
+        if match:                
+            result = []
+            for n in tree.rsearch(curNode.identifier,isnt_root):
+                result.insert(0, tree.get_node(n).tag)
+            out = ",".join(result)   
+    return out
+tree = []
 
-CONFIG_SYSTEM_INTERFACE = "config system interface"
-EDIT_INTERFACE_NAME = "edit <interface_name>"
-SET_ALLOWACCESS = "set allowaccess <access_types>"
+#Read files 
+try:
+    config = open(CONFIG_FILE)
+except:
+    sys.exit("Unable to open configuration ",CONFIG_FILE)
+try:
+    gcb_pat = open(GCB_PATTERN)
+except:
+    sys.exit("Unable to open pattern file ",GCB_PATTERN)
+
+patterns = readPatterns(gcb_pat) # read the GCB�@patterns
+#parse the neccessary configuration commands
+configCmd = readValidcmd(patterns)
+flagEnterConfigSec = False # flag of config section entered
+lineCount = 0
+curLevel = preLevel = 0
+tree = Tree()
+curNode = tree.create_node(tag="root", identifier="root")
+
+for line in config.readlines():
+    lineCount = lineCount+1
+    line = line.rstrip() #ignore tailing space or newline
     
-class gcbFortigateMachine(StateMachine):
-    state_00 = State('State_00',initial=True)
-    state_01 = State('State_01',value="config system interface")
-    state_10 = State('State_10',value="edit <interface_name>")
-    state_47 = State('State_47_F',value="set allowaccess <access_types>")
-    state_48 = State('State_48')
-    state_49 = State('State_49')
-    state_50 = State('State_50')
-    state_51 = State('State_51')
-    state_52 = State('State_52')
+    if (len(line) == 0): # skip empty line
+        continue
+    curLevel = getLevel(line)
     
-    t_00_01 = state_00.to(state_01)
-    t_01_10 = state_01.to(state_10)
-    t_10_47 = state_10.to(state_47)
-    Transition
-
-#     t_01_48 = state_01.to(state_48)
-#     t_01_49 = state_01.to(state_49)
-#     t_01_50 = state_01.to(state_50)
-#     t_01_51 = state_01.to(state_51)
-#     t_01_52 = state_01.to(state_52)
     
-#     state_02 = State('State_02')
-#     state_03 = State('State_03')
-#     state_04 = State('State_04')
-#     state_05 = State('State_05')
-#     state_06 = State('State_06')
-#     state_ = State('State_07')
-#     state_ = State('State_08')
-#     state_ = State('State_09')
-#     state_ = State('State_10')
-#     state_ = State('State_11')
-#     state_ = State('State_12')
-#     state_ = State('State_13')
-#     state_ = State('State_14')
-#     state_ = State('State_')
-#     state_ = State('State_')
-#     state_ = State('State_')
-#     state_ = State('State_')
-#     state_ = State('State_')
-#     state_ = State('State_')
-#     state_ = State('State_')
-    def on_t_10_47(self):
-        cmdLine = []
-        preState = self.allowed_transitions[0].source
-#         while(not preState.initial):
-#             cmdLine.append(preState.value)
-#             preState = 
-        print(self.transitions[-1].destinations[0].value)
-    def on_t_01_10(self):
-        print(self.transitions[-1].destinations[0].value)
-    def on_t_00_01(self):
-        print(self.transitions[-1].destinations[0].value)
-    
-       
+    if (not flagEnterConfigSec and not line[0].isspace() and line in configCmd): # a new configuration section found
+        flagEnterConfigSec = True
+        [tag,value] = line.split(" ",maxsplit=1)
+        curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent="root")
+    elif (flagEnterConfigSec and (line.strip() == "end" or line.strip() == "next")): # the end if configuration section
+        flagEnterConfigSec = False
+        curNode = tree.parent(curNode.identifier)
+    elif flagEnterConfigSec:
+        [tag,value] = line.lstrip().split(" ",maxsplit=1)
+        if (curLevel > preLevel):
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode)
+        else:
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer)
+    preLevel = curLevel
 
+root = tree.parent(curNode.identifier)
 
+for p in patterns:
+    [gcb, config] = p
+    out = recognizeGCB(gcb,config,root)
+    if out:
+        print(",".join([gcb,out]))
+    else:
+        print(gcb+",None")
 
-ss = gcbFortigateMachine()
-assert(ss.current_state)
-
-line = "config system interface"
-if line == CONFIG_SYSTEM_INTERFACE:
-    ss.run('t_00_01')
-line = "edit <interface_name>"
-if line == EDIT_INTERFACE_NAME:
-    ss.run('t_01_10')
-line =  "set allowaccess <access_types>"
-if line == SET_ALLOWACCESS:
-    ss.run('t_10_47')
+        
+        
+        
+        
+        
     

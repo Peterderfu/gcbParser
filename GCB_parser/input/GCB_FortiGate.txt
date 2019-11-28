@@ -1,0 +1,47 @@
+GCB_Fortinet_Fortigate_01,config system interface,edit <interface_name>,set allowaccess <access_types>
+GCB_Fortinet_Fortigate_02,config system interface,edit <interface_name>,set description <text>
+GCB_Fortinet_Fortigate_03,config system interface,edit <interface_name>,set broadcast-forward disable
+GCB_Fortinet_Fortigate_04,config system interface,edit <interface_name>,set drop-fragment enable 
+GCB_Fortinet_Fortigate_05,config system interface,edit <interface_name>,set drop-overlappedfragment enable 
+GCB_Fortinet_Fortigate_06,config system interface,edit <interface_name>,set fail-detect enable 
+GCB_Fortinet_Fortigate_07,config system password-policy,set status enable 
+GCB_Fortinet_Fortigate_08,config system password-policy,set apply-to admin-password
+GCB_Fortinet_Fortigate_09,config system password-policy,set min-lower-case-letter 1
+GCB_Fortinet_Fortigate_10,config system password-policy,set min-upper-case-letter 1
+GCB_Fortinet_Fortigate_11,config system password-policy,set min-non-alphanumeric 1
+GCB_Fortinet_Fortigate_12,config system password-policy,set min-number 1
+GCB_Fortinet_Fortigate_13,config system password-policy,set minimum-length 12
+GCB_Fortinet_Fortigate_14,config system password-policy,set change-4-characters enable
+GCB_Fortinet_Fortigate_15,config system password-policy,set expire-status enable
+GCB_Fortinet_Fortigate_16,config system password-policy,set expire 90
+GCB_Fortinet_Fortigate_17,config system password-policy,set expire-day 14
+GCB_Fortinet_Fortigate_18,config system ntp,set ntpsync enable
+GCB_Fortinet_Fortigate_19,config system ntp,set ntp-server1 <ipv4_addr>,set ntp-server2 <ipv4_addr>
+GCB_Fortinet_Fortigate_20,config system ntp,set ntpv3 enable
+GCB_Fortinet_Fortigate_21,config system admin,set password <admin_password>
+GCB_Fortinet_Fortigate_22,config system admin,set force-password-change enable
+GCB_Fortinet_Fortigate_23,config system admin,set guest-auth disable
+GCB_Fortinet_Fortigate_24,config system admin,set allow-remove-adminsession disable
+GCB_Fortinet_Fortigate_25,config system auto-install,set auto-install-config disable
+GCB_Fortinet_Fortigate_26,config system auto-install,set auto-install-image enable disable
+GCB_Fortinet_Fortigate_27,config system global,set admin-https-ssl-versions tlsv1-0 tlsv1-1 tlsv1-2
+GCB_Fortinet_Fortigate_28,config system global,set admin-https-redirect enable
+GCB_Fortinet_Fortigate_29,config system global,set admin-lockout-threshold 3
+GCB_Fortinet_Fortigate_30,config system global,set admin-lockout-duration 900
+GCB_Fortinet_Fortigate_31,config system global,set hostname <unithostname>
+GCB_Fortinet_Fortigate_32,config system global,set fds-statistics disable
+GCB_Fortinet_Fortigate_33,config system global,set admin-ssh-grace-time 900
+GCB_Fortinet_Fortigate_34,config system global,set admin-login-max 1
+GCB_Fortinet_Fortigate_35,config system global,set admin-reset-button disable
+GCB_Fortinet_Fortigate_36,config system global,set cfg-save manual
+GCB_Fortinet_Fortigate_37,config system snmp user,edit <username>,set set security-level auth-priv
+GCB_Fortinet_Fortigate_38,config system snmp user,edit <username>,set priv-proto aes256
+GCB_Fortinet_Fortigate_39,config system snmp user,edit <username>,set auth-proto sha
+GCB_Fortinet_Fortigate_40,config system snmp user,edit <username>,set query-port <port_int>
+GCB_Fortinet_Fortigate_41,config system snmp community,edit <index Num>,set name <community_name>
+GCB_Fortinet_Fortigate_42,config system snmp community,set query-v1-status disable
+GCB_Fortinet_Fortigate_43,config system snmp community,edit <index Num>,set query-v1-prot <port num>
+GCB_Fortinet_Fortigate_44,config system snmp community,set query-v2c-status disable
+GCB_Fortinet_Fortigate_45,config system snmp community,edit <index Num>,set query-v2c-prot <port num>
+GCB_Fortinet_Fortigate_46,config log setting,set log-invalid-packet enable
+GCB_Fortinet_Fortigate_47,config log setting,set user-anonymize disable
