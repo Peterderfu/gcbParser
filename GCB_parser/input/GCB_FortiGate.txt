@@ -23,7 +23,7 @@ GCB_Fortinet_Fortigate_22,config system admin,set force-password-change enable
 GCB_Fortinet_Fortigate_23,config system admin,set guest-auth disable
 GCB_Fortinet_Fortigate_24,config system admin,set allow-remove-adminsession disable
 GCB_Fortinet_Fortigate_25,config system auto-install,set auto-install-config disable
-GCB_Fortinet_Fortigate_26,config system auto-install,set auto-install-image enable disable
+GCB_Fortinet_Fortigate_26,config system auto-install,set auto-install-image disable
 GCB_Fortinet_Fortigate_27,config system global,set admin-https-ssl-versions tlsv1-0 tlsv1-1 tlsv1-2
 GCB_Fortinet_Fortigate_28,config system global,set admin-https-redirect enable
 GCB_Fortinet_Fortigate_29,config system global,set admin-lockout-threshold 3
