@@ -147,9 +147,76 @@ def validate_GCB_Fortinet_Fortigate_31(config):
 def validate_GCB_Fortinet_Fortigate_32(config):
 #pattern :　 set fds-statistics disable 
     return (VALID_SETTING if (config[-1].strip() == "set fds-statistics disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
-
+def validate_GCB_Fortinet_Fortigate_33(config):
+#pattern : "set admin-ssh-grace-time <number>" , and number <=900
+    if (config and len(config)==2):
+        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+        return VALID_SETTING if (s == "set admin-ssh-grace-time" and int(n) <= 900) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_34(config):
+#pattern : "set admin-login-max <number>" , and number <=1
+    if (config and len(config)==2):
+        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+        return VALID_SETTING if (s == "set admin-login-max" and int(n) <= 1) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_35(config):
+#pattern :　 set admin-reset-button disable 
+    return (VALID_SETTING if (config[-1].strip() == "set admin-reset-button disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_36(config):
+#pattern :　 set cfg-save manual 
+    return (VALID_SETTING if (config[-1].strip() == "set cfg-save manual") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_37(config):
+#pattern :　 set set security-level auth-priv 
+    return (VALID_SETTING if (config[-1].strip() == "set set security-level auth-priv") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_38(config):
+#pattern :　 set priv-proto aes256 
+    return (VALID_SETTING if (config[-1].strip() == "set priv-proto aes256") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_39(config):
+#pattern :　 set auth-proto sha 
+    return (VALID_SETTING if (config[-1].strip() == "set auth-proto sha") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_40(config):
+#pattern : set query-port <port_int> , and port_int !=161
+    if (config and len(config)==3):
+        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+        return VALID_SETTING if (s == "set query-port" and int(n) != 161) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_41(config):
+#pattern :　set name <community_name>
+    if config and len(config)==3:
+        return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_42(config):
+#pattern :　 set query-v1-status disable 
+    return (VALID_SETTING if (config[-1].strip() == "set query-v1-status disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_43(config):
+#pattern : set query-v1-prot <port_int> , and port_int !=161
+    if (config and len(config)==3):
+        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+        return VALID_SETTING if (s == "set query-v1-prot" and int(n) != 161) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_44(config):
+#pattern :　 set query-v2c-status disable 
+    return (VALID_SETTING if (config[-1].strip() == "set query-v2c-status disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_45(config):
+#pattern : set query-v2c-prot <port_int> , and port_int !=161
+    if (config and len(config)==3):
+        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+        return VALID_SETTING if (s == "set query-v2c-prot" and int(n) != 161) else INVALID_SETTING
+    else:
+        return NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_46(config):
+#pattern :　 set log-invalid-packet enable 
+    return (VALID_SETTING if (config[-1].strip() == "set log-invalid-packet enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+def validate_GCB_Fortinet_Fortigate_47(config):
+#pattern :　 set user-anonymize disable 
+    return (VALID_SETTING if (config[-1].strip() == "set user-anonymize disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+    
 def validateGCB(gcbIndex,config):
-
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
         return validate_GCB_Fortinet_Fortigate_01(config)
     elif  gcbIndex == "GCB_Fortinet_Fortigate_02":
@@ -171,6 +238,8 @@ def validateGCB(gcbIndex,config):
     elif  gcbIndex == "GCB_Fortinet_Fortigate_10":
         return validate_GCB_Fortinet_Fortigate_10(config)
     elif  gcbIndex == "GCB_Fortinet_Fortigate_11":
+        return validate_GCB_Fortinet_Fortigate_11(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_12":
         return validate_GCB_Fortinet_Fortigate_12(config)
     elif  gcbIndex == "GCB_Fortinet_Fortigate_13":
         return validate_GCB_Fortinet_Fortigate_13(config)
@@ -186,8 +255,64 @@ def validateGCB(gcbIndex,config):
         return validate_GCB_Fortinet_Fortigate_18(config)
     elif  gcbIndex == "GCB_Fortinet_Fortigate_19":
         return validate_GCB_Fortinet_Fortigate_19(config)
-    
-    
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_20":
+        return validate_GCB_Fortinet_Fortigate_20(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_21":
+        return validate_GCB_Fortinet_Fortigate_21(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_22":
+        return validate_GCB_Fortinet_Fortigate_22(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_23":
+        return validate_GCB_Fortinet_Fortigate_23(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_24":
+        return validate_GCB_Fortinet_Fortigate_24(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_25":
+        return validate_GCB_Fortinet_Fortigate_25(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_26":
+        return validate_GCB_Fortinet_Fortigate_26(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_27":
+        return validate_GCB_Fortinet_Fortigate_27(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_28":
+        return validate_GCB_Fortinet_Fortigate_28(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_29":
+        return validate_GCB_Fortinet_Fortigate_29(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_30":
+        return validate_GCB_Fortinet_Fortigate_30(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_31":
+        return validate_GCB_Fortinet_Fortigate_31(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_32":
+        return validate_GCB_Fortinet_Fortigate_32(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_33":
+        return validate_GCB_Fortinet_Fortigate_33(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_34":
+        return validate_GCB_Fortinet_Fortigate_34(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_35":
+        return validate_GCB_Fortinet_Fortigate_35(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_36":
+        return validate_GCB_Fortinet_Fortigate_36(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_37":
+        return validate_GCB_Fortinet_Fortigate_37(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_38":
+        return validate_GCB_Fortinet_Fortigate_38(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_39":
+        return validate_GCB_Fortinet_Fortigate_39(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_40":
+        return validate_GCB_Fortinet_Fortigate_40(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_41":
+        return validate_GCB_Fortinet_Fortigate_41(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_42":
+        return validate_GCB_Fortinet_Fortigate_42(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_43":
+        return validate_GCB_Fortinet_Fortigate_43(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_44":
+        return validate_GCB_Fortinet_Fortigate_44(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_45":
+        return validate_GCB_Fortinet_Fortigate_45(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_46":
+        return validate_GCB_Fortinet_Fortigate_46(config)
+    elif  gcbIndex == "GCB_Fortinet_Fortigate_47":
+        return validate_GCB_Fortinet_Fortigate_47(config)
+    else:
+        return None
     
 def readValidcmd(patterns):
     out = set()
@@ -225,7 +350,6 @@ def recognizeGCB(gcbIndex,confPattern,root):
             result = []
             for n in tree.rsearch(curNode.identifier,isnt_root):
                 result.insert(0, tree.get_node(n).tag)
-#             out = ",".join(result)   
             out = result
     return out
 tree = []
@@ -285,6 +409,8 @@ for p in patterns:
         description = "錯誤設定"
     elif result == NOT_SETTING:
         description = "尚未設定"
+    else:
+        sys.exit("無法解析")
     out = ",".join([gcb,",".join(parsed) if parsed else "None",description])
     print(out)
         
