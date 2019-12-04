@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
 encoding//GCB_parser/GCB_parser.py=utf-8
+encoding//GCB_parser/lib/device/firewall/fortinet/fortigate.py=utf-8
 encoding//GCB_parser/lib/treelib/tree.py=utf-8
+encoding/<project>=UTF-8
+separateDerivedEncodings=true
