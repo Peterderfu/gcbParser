@@ -7,6 +7,10 @@ VALID_SETTING = 0
 INVALID_SETTING = 1
 NOT_SETTING = 2
 tree = Tree()
+class MatchRecord(object):
+    def __init__(self, isMatch):
+        self.childMatch = isMatch[0]
+        self.selfMatch  = isMatch[1]
 def validate_GCB_Fortinet_Fortigate_01(config):
 #NO http/telnet following "set allowaccess"
 #config pattern : set allowaccess <proto1> <proto2> ...
@@ -225,24 +229,32 @@ def isnt_root(node):
 def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
 def recognizeGCB(gcbIndex,confPattern,root):
-    out = None
+    out = []
     curNode = root
-    if True:
+    while True:
         for cmd in confPattern.strip().split(","):
             match = flagFuzzyMatch = False
             if re.search('.*<.*>.*',cmd):
                 cmd = re.search('.*(?=<)',cmd).group(0)
                 flagFuzzyMatch = True
             for child in tree.children(curNode.identifier):
+#                 if child.data.selfMatch:
+#                     continue
                 match = child.tag.startswith(cmd) if flagFuzzyMatch else (cmd == child.tag)
                 if match:
                     curNode = child
                     break
-        if match:                
+        if match:
+#             curNode.data.selfMatch = True
+#             tree.parent(curNode.identifier).data.childMatch = True                
             result = []
             for n in tree.rsearch(curNode.identifier,isnt_root):
                 result.insert(0, tree.get_node(n).tag)
-            out = result
+#             out = result
+            out.append(result)
+            curNode = root
+        else:
+            break
     return out
 def validateGCB(gcbIndex,config):
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
@@ -349,7 +361,7 @@ def process(patterns,config):
     
     #start to feed configuration item into data structure
 #     tree = Tree()
-    curNode = tree.create_node(tag="root", identifier="root")
+    curNode = tree.create_node(tag="root", identifier="root",data=MatchRecord([False,False]))
     for line in config.readlines():
         lineCount += 1
         line = line.rstrip() #ignore tailing space or newline
@@ -362,16 +374,16 @@ def process(patterns,config):
         if (not flagEnterConfigSec and not line[0].isspace() and line in configCmd): # a new configuration section found
             flagEnterConfigSec = True
             [tag,value] = line.split(" ",maxsplit=1)
-            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent="root")
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent="root",data=MatchRecord([False,False]))
         elif (flagEnterConfigSec and (line.strip() == "end" or line.strip() == "next")): # the end if configuration section
             flagEnterConfigSec = False
             curNode = tree.parent(curNode.identifier)
         elif flagEnterConfigSec:
             [tag,value] = line.lstrip().split(" ",maxsplit=1)
             if (curLevel > preLevel):
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode)
+                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode,data=MatchRecord([False,False]))
             else:
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer)
+                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer,data=MatchRecord([False,False]))
         preLevel = curLevel
     root = tree.parent(curNode.identifier)
     
