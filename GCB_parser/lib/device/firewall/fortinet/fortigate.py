@@ -228,34 +228,39 @@ def isnt_root(node):
     return not (node.identifier == "root")
 def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
-def recognizeGCB(gcbIndex,confPattern,root):
+def recognizeGCB(gcbIndex,confPattern,tree):
     out = []
-    curNode = root
-    while True:
-        for cmd in confPattern.strip().split(","):
+    paths = tree.paths_to_leaves()
+    
+    for cmd in confPattern.strip().split(","): # compare each pattern in the pattern sequence
             match = flagFuzzyMatch = False
-            if re.search('.*<.*>.*',cmd):
-                cmd = re.search('.*(?=<)',cmd).group(0)
+            if re.search('.*<.*>.*',cmd): # if <> existing in pattern, the text within "<>" is variable
+                cmd = re.search('.*(?=<)',cmd).group(0) # find the text within "<>"
                 flagFuzzyMatch = True
-            for child in tree.children(curNode.identifier):
-#                 if child.data.selfMatch:
-#                     continue
-                match = child.tag.startswith(cmd) if flagFuzzyMatch else (cmd == child.tag)
-                if match:
-                    curNode = child
-                    break
-        if match:
-#             curNode.data.selfMatch = True
-#             tree.parent(curNode.identifier).data.childMatch = True                
-            result = []
-            for n in tree.rsearch(curNode.identifier,isnt_root):
-                result.insert(0, tree.get_node(n).tag)
-#             out = result
-            out.append(result)
-            curNode = root
-        else:
-            break
-    return out
+
+# def recognizeGCB(gcbIndex,confPattern,root):
+#     out = []
+#     curNode = root
+#     while True:
+#         for cmd in confPattern.strip().split(","): # compare each pattern in the pattern sequence
+#             match = flagFuzzyMatch = False
+#             if re.search('.*<.*>.*',cmd): # if <> existing in pattern, the text within "<>" is variable
+#                 cmd = re.search('.*(?=<)',cmd).group(0) # find the text within "<>"
+#                 flagFuzzyMatch = True
+#             for child in tree.children(curNode.identifier): #start to traverse tree in BFS order
+#                 match = child.tag.startswith(cmd) if flagFuzzyMatch else (cmd == child.tag)
+#                 if match:
+#                     curNode = child
+#                     break
+#         if match:
+#             result = []
+#             for n in tree.rsearch(curNode.identifier,isnt_root):
+#                 result.insert(0, tree.get_node(n).tag)
+#             out.append(result)
+#             curNode = root
+#         else:
+#             break
+#     return out
 def validateGCB(gcbIndex,config):
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
         return validate_GCB_Fortinet_Fortigate_01(config)
@@ -391,7 +396,8 @@ def process(patterns,config):
     
     for p in patterns:
         [gcb, config] = p
-        parsed = recognizeGCB(gcb,config,root)
+        parsed = recognizeGCB(gcb,config,tree)
+#         parsed = recognizeGCB(gcb,config,root)
         result = validateGCB(gcb, parsed)
         if result == VALID_SETTING:
             description = "正確設定"
