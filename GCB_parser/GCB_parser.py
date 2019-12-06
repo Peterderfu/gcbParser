@@ -3,12 +3,17 @@ import sys,re, argparse
 from lib.treelib import Tree,node  #https://treelib.readthedocs.io/en/latest/
 from lib.device.firewall.fortinet import fortigate
 def readPatterns(f):
-    out = []
+    out = dict()
     lineCount = 0
     for line in f.readlines():
         lineCount += 1
         if re.search(fortigate.GCB_INDEX_PAT, line):
-            out.append(line.strip().split(",",maxsplit=1))
+            tmpList = []
+            [key,patterns] = line.strip().split(",",maxsplit=1)
+            for p in patterns.split(","):
+                (new_string, number_of_subs_made) = re.subn("<.*>",".*",p)
+                tmpList.append({"pattern":new_string,"fuzzyMatch":(number_of_subs_made > 0)})
+            out[key] = tmpList
         else:
             sys.exit("".join(["Invalid GCB index format at line#", str(lineCount) , " : ", line]))
     return out

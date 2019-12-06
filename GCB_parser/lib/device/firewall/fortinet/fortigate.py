@@ -6,7 +6,7 @@ LEADING_SPACE = " " * 4
 VALID_SETTING = 0
 INVALID_SETTING = 1
 NOT_SETTING = 2
-tree = Tree()
+
 class MatchRecord(object):
     def __init__(self, isMatch):
         self.childMatch = isMatch[0]
@@ -221,8 +221,8 @@ def validate_GCB_Fortinet_Fortigate_47(config):
 
 def readValidcmd(patterns):
     out = set()
-    for line in patterns:
-        out.add(line[-1].split(",")[0])
+    for line in patterns.values():
+        out.add(line[0]['pattern'])
     return out
 def isnt_root(node):
     return not (node.identifier == "root")
@@ -230,37 +230,38 @@ def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
 def recognizeGCB(gcbIndex,confPattern,tree):
     out = []
-    paths = tree.paths_to_leaves()
+    paths = tree.paths_to_leaves() # all paths from root to leaves
     
-    for cmd in confPattern.strip().split(","): # compare each pattern in the pattern sequence
-            match = flagFuzzyMatch = False
-            if re.search('.*<.*>.*',cmd): # if <> existing in pattern, the text within "<>" is variable
-                cmd = re.search('.*(?=<)',cmd).group(0) # find the text within "<>"
-                flagFuzzyMatch = True
+    for path in paths: # examine every path 
+        if (len(path)>2 and path[2]=="00000306"):
+            pass
+        matched = False
+        for pattern in confPattern:
+            # compare the individual pattern with nodes in path
+            if ((pattern == confPattern[0]) or matched):
+                curNode = 0
+                while (curNode < len(path)):
+                    #if current node in path matched to current pattern, step to the next node and pattern
+                    if pattern['fuzzyMatch'] == True:
+                        if re.search(pattern['pattern'],tree.get_node(path[curNode]).tag):
+                            matched = True
+                            break
+                        else:
+                            matched = False
+                    else:
+                        if (pattern['pattern'] == tree.get_node(path[curNode]).tag):
+                            matched = True
+                            break
+                        else:
+                            matched = False
+                    curNode += 1
+                        
+        if matched:
+            result = [tree.get_node(n).tag for n in path[1:]] # ignore root
+            out.append(result)
+            print(",".join(result))
+    pass
 
-# def recognizeGCB(gcbIndex,confPattern,root):
-#     out = []
-#     curNode = root
-#     while True:
-#         for cmd in confPattern.strip().split(","): # compare each pattern in the pattern sequence
-#             match = flagFuzzyMatch = False
-#             if re.search('.*<.*>.*',cmd): # if <> existing in pattern, the text within "<>" is variable
-#                 cmd = re.search('.*(?=<)',cmd).group(0) # find the text within "<>"
-#                 flagFuzzyMatch = True
-#             for child in tree.children(curNode.identifier): #start to traverse tree in BFS order
-#                 match = child.tag.startswith(cmd) if flagFuzzyMatch else (cmd == child.tag)
-#                 if match:
-#                     curNode = child
-#                     break
-#         if match:
-#             result = []
-#             for n in tree.rsearch(curNode.identifier,isnt_root):
-#                 result.insert(0, tree.get_node(n).tag)
-#             out.append(result)
-#             curNode = root
-#         else:
-#             break
-#     return out
 def validateGCB(gcbIndex,config):
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
         return validate_GCB_Fortinet_Fortigate_01(config)
@@ -365,8 +366,8 @@ def process(patterns,config):
     curLevel = preLevel = 0
     
     #start to feed configuration item into data structure
-#     tree = Tree()
-    curNode = tree.create_node(tag="root", identifier="root",data=MatchRecord([False,False]))
+    tree = Tree()
+    curNode = tree.create_node(tag="root", identifier="root")
     for line in config.readlines():
         lineCount += 1
         line = line.rstrip() #ignore tailing space or newline
@@ -379,23 +380,23 @@ def process(patterns,config):
         if (not flagEnterConfigSec and not line[0].isspace() and line in configCmd): # a new configuration section found
             flagEnterConfigSec = True
             [tag,value] = line.split(" ",maxsplit=1)
-            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent="root",data=MatchRecord([False,False]))
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent="root")
         elif (flagEnterConfigSec and (line.strip() == "end" or line.strip() == "next")): # the end if configuration section
             flagEnterConfigSec = False
             curNode = tree.parent(curNode.identifier)
         elif flagEnterConfigSec:
             [tag,value] = line.lstrip().split(" ",maxsplit=1)
             if (curLevel > preLevel):
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode,data=MatchRecord([False,False]))
+                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode)
             else:
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer,data=MatchRecord([False,False]))
+                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer)
         preLevel = curLevel
     root = tree.parent(curNode.identifier)
     
     #start to fetch the configuration command sequence according to GCB rule
     
-    for p in patterns:
-        [gcb, config] = p
+    for [gcb, config] in patterns.items():
+#         [gcb, config] = p
         parsed = recognizeGCB(gcb,config,tree)
 #         parsed = recognizeGCB(gcb,config,root)
         result = validateGCB(gcb, parsed)
