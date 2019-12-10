@@ -371,7 +371,8 @@ def debug(lineCount,preLevel,curLevel,curNode,curTop):
     print('-'*100)
 def process(patterns,config):
     configCmd = readValidcmd(patterns)
-    flagEnterConfigSec = False # flag of config section entered
+#     flagEnterConfigSec = False # flag of config section entered
+    flagEnterConfigSec = 0 # flag of config section entered
     flagSkipConfigSec  = False # flag of skipping config section
     lineCount = 0              # the number of lines processed
     curLevel =  0    # the hierarchical position this line
@@ -397,10 +398,12 @@ def process(patterns,config):
         
         # flagSkipConfigSec is False and process goes below
         
-        if (flagEnterConfigSec == False): # 
+#         if (flagEnterConfigSec == False): # 
+        if (flagEnterConfigSec == 0): #
             if (re.search("^config\s\w+", line)): # search config section start
                 if (line in configCmd): # test whether this config command searched needed or not?  
-                    flagEnterConfigSec = True
+#                     flagEnterConfigSec = True
+                    flagEnterConfigSec += 1
                 else:
                     flagSkipConfigSec = True # this config section is not needed for further processing
                     continue # skip to next line
@@ -417,10 +420,13 @@ def process(patterns,config):
             preLevel = curLevel
             debug(lineCount,preLevel,curLevel, curNode, curTop)
         elif (isConfigSecEnd(line)):
-            curNode = tree.parent(curNode.identifier)
-            curTop = tree.parent(curNode.identifier)
-            preLevel = curLevel - 1
-            flagEnterConfigSec = False
+#             curNode = tree.parent(curNode.identifier)
+#             curTop = tree.parent(curNode.identifier)
+            curTop = tree.parent(tree.parent(curNode.identifier).identifier)
+#             preLevel = curLevel - 1
+            preLevel = curLevel
+#             flagEnterConfigSec = False
+            flagEnterConfigSec -= 1
             debug(lineCount,preLevel,curLevel, curNode, curTop)
         else:
             pass   # should not stop here
