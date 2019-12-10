@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from lib.treelib import Tree
-import re
+import re, pprint
 GCB_INDEX_PAT = '^GCB_[a-zA-Z0-9]+_[a-zA-Z0-9]+_\d{2},\w+'
 LEADING_SPACE = " " * 4
 VALID_SETTING = 0
@@ -359,58 +359,72 @@ def validateGCB(gcbIndex,config):
         return validate_GCB_Fortinet_Fortigate_47(config)
     else:
         return None
+def isConfigSecEnd(line):
+    return (line.lower() in ["end","next"])
+def debug(lineCount,preLevel,curLevel,curNode,curTop):
+    print(''.join(['line  :',str(lineCount)]))
+    print(''.join(['preLv :',str(preLevel)]))
+    print(''.join(['curLv :',str(curLevel)]))
+    print(''.join(['curNd :',str(curNode.identifier)]))
+    print(''.join(['curNd.p :',str(curNode.bpointer)]))
+    print(''.join(['curTop :',str(curTop.identifier)]))
+    print('-'*100)
 def process(patterns,config):
     configCmd = readValidcmd(patterns)
     flagEnterConfigSec = False # flag of config section entered
-    lineCount = 0
-    curLevel = preLevel = 0
-    
-    #search the config section (^config)
-    #if 
-    #
-    #
+    flagSkipConfigSec  = False # flag of skipping config section
+    lineCount = 0              # the number of lines processed
+    curLevel =  0    # the hierarchical position this line
+    preLevel = -1    # the hierarchical position of previous line in processing
     
     #start to feed configuration item into data structure
     tree = Tree()
     curNode = tree.create_node(tag=TREE_ROOT, identifier=TREE_ROOT)
+    curTop = curNode
+    
     for line in config.readlines():
         lineCount += 1
         line = line.rstrip() #ignore tailing space or newline
         
         if (len(line) == 0): # skip empty line
-            continue
-        curLevel = getLevel(line)
-        
+            continue # skip to next line
+        curLevel = getLevel(line) # get the hierarchical position of this line 
         line = line.strip()
-        if (curLevel == 0):
-             if (line in configCmd): # a new configuration section found
-                 curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=TREE_ROOT) # create a node with parent root
-        elif ((line.lower() in ["end","next"]) and (curLevel < preLevel)): # the end of configuration section
-            curNode = curNode.bpointer # go up one level
-        else:
-            if (curLevel > preLevel): #go down one level
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode)
+        
+        if (flagSkipConfigSec == True):  # if SkipConfigSec flag set to true previously, we should skip to next line based on isConfigSecEnd 
+            flagSkipConfigSec = not isConfigSecEnd(line)  # the condition of config section end occurs 
+            continue # skip to next line
+        
+        # flagSkipConfigSec is False and process goes below
+        
+        if (flagEnterConfigSec == False): # 
+            if (re.search("^config\s\w+", line)): # search config section start
+                if (line in configCmd): # test whether this config command searched needed or not?  
+                    flagEnterConfigSec = True
+                else:
+                    flagSkipConfigSec = True # this config section is not needed for further processing
+                    continue # skip to next line
             else:
-                curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer)
-        preLevel = curLevel
-#         ///////////////////////////////////////////////////////
-#         if (not flagEnterConfigSec and not line[0].isspace() and line in configCmd): # a new configuration section found
-#             flagEnterConfigSec = True
-#             [tag,value] = line.split(" ",maxsplit=1)
-#             curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(), parent=TREE_ROOT)
-#         elif (flagEnterConfigSec and (line.strip() == "end" or line.strip() == "next")): # the end if configuration section
-#             flagEnterConfigSec = False
-#             curNode = tree.parent(curNode.identifier)
-#         elif flagEnterConfigSec:
-#             [tag,value] = line.lstrip().split(" ",maxsplit=1)
-#             if (curLevel > preLevel):
-#                 curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode)
-#             else:
-#                 curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.strip(),parent=curNode.bpointer)
-#         preLevel = curLevel
-#     root = tree.parent(curNode.identifier)
-#         ///////////////////////////////////////////////////////   
-    #start to fetch the configuration command sequence according to GCB rule
+                continue  # skip to next line
+        # Below is config section processing
+        if (curLevel > preLevel):
+            curTop = curNode
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
+            preLevel = curLevel
+            debug(lineCount,preLevel,curLevel, curNode, curTop)
+        elif (curLevel == preLevel):
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
+            preLevel = curLevel
+            debug(lineCount,preLevel,curLevel, curNode, curTop)
+        elif (isConfigSecEnd(line)):
+            curNode = tree.parent(curNode.identifier)
+            curTop = tree.parent(curNode.identifier)
+            preLevel = curLevel - 1
+            flagEnterConfigSec = False
+            debug(lineCount,preLevel,curLevel, curNode, curTop)
+        else:
+            pass   # should not stop here
+            
     
     for [gcb, config] in patterns.items():
 #         [gcb, config] = p
