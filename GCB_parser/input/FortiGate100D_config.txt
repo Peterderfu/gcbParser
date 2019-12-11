@@ -1,11 +1,3 @@
-
- 
-Connected
- 
-config global
-AAAAA # config global
- 
-AAAAA (global) # show full-configuration 
 config system global
     set admin-concurrent enable
     set admin-console-timeout 0
@@ -13,7 +5,7 @@ config system global
     set admin-https-pki-required disable
     set admin-https-redirect enable
     set admin-https-ssl-versions tlsv1-1 tlsv1-2
-    set admin-lockout-duration 60
+    set admin-lockout-duration 900
     set admin-lockout-threshold 3
     set admin-login-max 100
     set admin-maintainer enable

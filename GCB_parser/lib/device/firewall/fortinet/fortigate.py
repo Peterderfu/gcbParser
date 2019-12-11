@@ -27,7 +27,24 @@ def compareMethod_1(pattern, config):
             return  VALID_SETTING
         else:
             return INVALID_SETTING
-    
+# def compareMethod_2("<",["set admin-lockout-threshold", "3"],config)
+def compareMethod_2(op,pattern,config):
+    if not config[-1].startswith(pattern[0]):
+        return NOT_SETTING
+    else:
+        if op == "<":
+            out = int(config[-1].split(" ")[-1]) < int(pattern[1])
+        elif op == ">":
+            out = int(config[-1].split(" ")[-1]) > int(pattern[1])
+        elif op == ">=":
+            out = int(config[-1].split(" ")[-1]) >= int(pattern[1])
+        elif op == "<=":
+            out = int(config[-1].split(" ")[-1]) <= int(pattern[1])
+        elif op == "!=":
+            out = int(config[-1].split(" ")[-1]) != int(pattern[1])
+        else:
+            sys.exit("Invalid comparison operator")
+        return VALID_SETTING if (out == True) else INVALID_SETTING
 def validate_GCB_Fortinet_Fortigate_01(config):
 #NO http/telnet following "set allowaccess"
 #config pattern : set allowaccess <proto1> <proto2> ...
@@ -54,82 +71,76 @@ def validate_GCB_Fortinet_Fortigate_02(config):
 def validate_GCB_Fortinet_Fortigate_03(config):
 #pattern :　set broadcast-forward disable
     return compareMethod_1(["set broadcast-forward", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set broadcast-forward disable") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_04(config):
 #pattern :　set drop-fragment enable
     return compareMethod_1(["set drop-fragment", "enable"], config)
-#     return (VALID_SETTING if (config[-1].strip() == "set drop-fragment enable") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_05(config):
 #pattern :　set drop-overlappedfragment enable 
     return compareMethod_1(["set drop-overlappedfragment","enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set drop-overlappedfragment enable") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_06(config):
 #pattern :　set fail-detect enable 
     return compareMethod_1(["set fail-detect", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set fail-detect enable") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_07(config):
 #pattern :　set status enable
     return compareMethod_1(["set status", "enable"],config) 
-#     return (VALID_SETTING if (config[-1].strip() == "set status enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_08(config):
 #pattern :　set apply-to admin-password 
     return compareMethod_1(["set apply-to", "admin-password"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set apply-to admin-password") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_09(config):
 #pattern : "set min-lower-case-letter <number>" , and number >=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set min-lower-case-letter" and int(n) >= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config)  
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set min-lower-case-letter" and int(n) >= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_10(config):
 #pattern : "set min-upper-case-letter <number>" , and number >=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set min-upper-case-letter" and int(n) >= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("=>",["set min-upper-case-letter", "1"],config)
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set min-upper-case-letter" and int(n) >= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_11(config):
 #pattern : "set min-non-alphanumeric <number>" , and number >=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set min-non-alphanumeric" and int(n) >= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("=>",["set min-non-alphanumeric", "1"],config)
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set min-non-alphanumeric" and int(n) >= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_12(config):
 #pattern : "set min-number <number>" , and number >=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set min-number" and int(n) >= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("=>",["set min-number", "1"],config)
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set min-number" and int(n) >= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_13(config):
 #pattern : "set minimum-length <number>" , and number >=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set minimum-length" and int(n) >= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("=>",["set minimum-length", "1"],config)
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set minimum-length" and int(n) >= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_14(config):
 #pattern :　set change-4-characters enable 
     return compareMethod_1(["set change-4-characters", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set change-4-characters enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_15(config):
 #pattern :　set expire-status enable 
     return compareMethod_1(["set expire-status", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set expire-status enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_16(config):
 #pattern :　set expire 90 
     return compareMethod_1(["set expire", "90"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set expire 90") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_17(config):
 #pattern :　set expire-day 14
     return compareMethod_1(["set expire-day", "14"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set expire-day 14") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_18(config):
 #pattern :　set ntpsync enable 
     return compareMethod_1(["set ntpsync", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set ntpsync enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_19(config):
 #pattern :　set ntp-server1 <ipv4_addr>,set ntp-server2 <ipv4_addr>
     ipv4re = '([0-9]{1,3}\.){3}[0-9]{1,3}' #ipv4 regular expression
@@ -142,48 +153,41 @@ def validate_GCB_Fortinet_Fortigate_19(config):
 def validate_GCB_Fortinet_Fortigate_20(config):
 #pattern :　set ntpv3 enable 
     return compareMethod_1(["set ntpv3", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set ntpv3 enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_21(config):
 #pattern :　set password <admin_password>
-    if config and len(config)==2:
+    if config and len(config)==3:
         return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
     else:
         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_22(config):
 #pattern :　set force-password-change enable 
     return compareMethod_1(["set force-password-change", "enable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set force-password-change enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_23(config):
 #pattern :　set guest-auth disable
     return compareMethod_1(["set guest-auth", "disable"], config)
 def validate_GCB_Fortinet_Fortigate_24(config):
 #pattern :　set allow-remove-adminsession disable 
     return compareMethod_1(["set allow-remove-adminsession", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set allow-remove-adminsession disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_25(config):
 #pattern :　set auto-install-config disable 
     return compareMethod_1(["set auto-install-config", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set auto-install-config disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_26(config):
 #pattern :　set auto-install-image disable 
     return compareMethod_1(["set auto-install-image", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set auto-install-image disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_27(config):
 #pattern :　set admin-https-ssl-versions tlsv1-0 tlsv1-1 tlsv1-2 
     return compareMethod_1(["set admin-https-ssl-versions", "tlsv1-0 tlsv1-1 tlsv1-2"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set admin-https-ssl-versions tlsv1-0 tlsv1-1 tlsv1-2") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_28(config):
 #pattern :　set admin-https-redirect enable 
     return compareMethod_1(["set admin-https-redirect", "enable"],config)
 #     return (VALID_SETTING if (config[-1].strip() == "set admin-https-redirect enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_29(config):
 #pattern :　set admin-lockout-threshold 3
-    return compareMethod_1(["set admin-lockout-threshold", "3"],config) 
-#     return (VALID_SETTING if (config[-1].strip() == "set admin-lockout-threshold 3") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+    return compareMethod_2("<=",["set admin-lockout-threshold", "3"],config)  
 def validate_GCB_Fortinet_Fortigate_30(config):
 #pattern :　set admin-lockout-duration 900
-    return compareMethod_1(["set admin-lockout-duration", "900"],config) 
-#     return (VALID_SETTING if (config[-1].strip() == "set admin-lockout-duration 900") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
+    return compareMethod_2(">=",["set admin-lockout-duration", "900"],config)  
+#     return compareMethod_1(["set admin-lockout-duration", "900"],config) 
 def validate_GCB_Fortinet_Fortigate_31(config):
 #pattern :　set hostname <unithostname>
     if config and len(config)==2:
@@ -193,41 +197,37 @@ def validate_GCB_Fortinet_Fortigate_31(config):
 def validate_GCB_Fortinet_Fortigate_32(config):
 #pattern :　 set fds-statistics disable 
     return compareMethod_1(["set fds-statistics", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set fds-statistics disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_33(config):
 #pattern : "set admin-ssh-grace-time <number>" , and number <=900
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set admin-ssh-grace-time" and int(n) <= 900) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("<=",["set admin-ssh-grace-time", "900"],config)  
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set admin-ssh-grace-time" and int(n) <= 900) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_34(config):
 #pattern : "set admin-login-max <number>" , and number <=1
-    if (config and len(config)==2):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set admin-login-max" and int(n) <= 1) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("<=",["set admin-login-max", "1"],config)  
+#     if (config and len(config)==2):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set admin-login-max" and int(n) <= 1) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_35(config):
 #pattern :　 set admin-reset-button disable 
     return compareMethod_1(["set admin-reset-button", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set admin-reset-button disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_36(config):
 #pattern :　 set cfg-save manual 
     return compareMethod_1(["set cfg-save", "manual"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set cfg-save manual") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_37(config):
 #pattern :　 set security-level auth-priv 
     return compareMethod_1(["set security-level", "auth-priv"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set set security-level auth-priv") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_38(config):
 #pattern :　 set priv-proto aes256 
     return compareMethod_1(["set priv-proto", "aes256"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set priv-proto aes256") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_39(config):
 #pattern :　 set auth-proto sha 
     return compareMethod_1(["set priv-proto", "aes256"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set auth-proto sha") else INVALID_SETTING) if (config and len(config)==3) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_40(config):
 #pattern : set query-port <port_int> , and port_int !=161
     if (config and len(config)==3):
@@ -244,33 +244,31 @@ def validate_GCB_Fortinet_Fortigate_41(config):
 def validate_GCB_Fortinet_Fortigate_42(config):
 #pattern :　 set query-v1-status disable 
     return compareMethod_1(["set query-v1-status", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set query-v1-status disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_43(config):
 #pattern : set query-v1-prot <port_int> , and port_int !=161
-    if (config and len(config)==3):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set query-v1-prot" and int(n) != 161) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("!=",["set query-v1-prot", "161"],config)  
+#     if (config and len(config)==3):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set query-v1-prot" and int(n) != 161) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_44(config):
 #pattern :　 set query-v2c-status disable 
     return compareMethod_1(["set query-v2c-status", "disable"],config)
-    return (VALID_SETTING if (config[-1].strip() == "set query-v2c-status disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_45(config):
 #pattern : set query-v2c-prot <port_int> , and port_int !=161
-    if (config and len(config)==3):
-        [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
-        return VALID_SETTING if (s == "set query-v2c-prot" and int(n) != 161) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+    return compareMethod_2("!=",["set query-v2c-prot", "161"],config)  
+#     if (config and len(config)==3):
+#         [s,n] = config[-1].strip().rsplit(" ", maxsplit=1)
+#         return VALID_SETTING if (s == "set query-v2c-prot" and int(n) != 161) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_46(config):
 #pattern :　 set log-invalid-packet enable
     return compareMethod_1(["set log-invalid-packet", "enable"],config) 
-#     return (VALID_SETTING if (config[-1].strip() == "set log-invalid-packet enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_47(config):
 #pattern :　 set user-anonymize disable 
     return compareMethod_1(["set user-anonymize", "disable"],config)
-#     return (VALID_SETTING if (config[-1].strip() == "set user-anonymize disable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
 
 def readValidcmd(patterns):
     out = set()

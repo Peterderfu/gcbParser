@@ -11,7 +11,7 @@ def readPatterns(f):
             tmpList = []
             [key,patterns] = line.strip().split(",",maxsplit=1)
             for p in patterns.split(","):
-                (new_string, number_of_subs_made) = re.subn("<.*>",".*",p)
+                (new_string, number_of_subs_made) =   re.subn("[<|\"].*[>|\"]",".*",p)
                 tmpList.append({"pattern":new_string,"fuzzyMatch":(number_of_subs_made > 0)})
             out[key] = tmpList
         else:
