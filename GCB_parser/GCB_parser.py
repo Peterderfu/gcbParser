@@ -20,9 +20,9 @@ def readPatterns(f):
 
 def processing(device,patterns,config):
     if device.lower() == "fortigate":
-        fortigate.process(patterns,config)
+        return fortigate.process(patterns,config)
     else:
-        fortigate.process(patterns,config)
+        return fortigate.process(patterns,config)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--read", help="the path of configuration to be parsed")
@@ -51,4 +51,20 @@ except:
     sys.exit("".join(["Unable to open output file : ",OUTPUT_FILE]))
 
 patterns = readPatterns(gcb_pat) # read the GCB�@patterns
-processing(DEVICE,patterns,config)
+tree = processing(DEVICE,patterns,config)
+
+
+for [gcb, config] in patterns.items():
+    parsed = fortigate.recognizeGCB(gcb,config,tree)
+    result = fortigate.validateGCB(gcb, parsed)
+    if result:
+        for r in range(len(result)):
+            out = ",".join([gcb,",".join(parsed[r]) if parsed else "",fortigate.VALIDATION_DESCRIP[result[r]]])
+            print(out)
+            output.write(out+"\n")
+    else:
+        out = ",".join([gcb, fortigate.VALIDATION_DESCRIP[fortigate.NOT_SETTING]])
+        print(out)
+        output.write(out+"\n")
+    
+output.close()
