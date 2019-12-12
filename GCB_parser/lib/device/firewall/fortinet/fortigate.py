@@ -434,18 +434,3 @@ def process(patterns,config):
             pass   # should not stop here
     
     return tree
-#     f = open('output/output.csv','w')
-#     for [gcb, config] in patterns.items():
-#         parsed = recognizeGCB(gcb,config,tree)
-#         result = validateGCB(gcb, parsed)
-#         if result:
-#             for r in range(len(result)):
-#                 out = ",".join([gcb,",".join(parsed[r]) if parsed else "",VALIDATION_DESCRIP[result[r]]])
-#                 print(out)
-#                 f.write(out+"\n")
-#         else:
-#             out = ",".join([gcb, VALIDATION_DESCRIP[NOT_SETTING]])
-#             print(out)
-#             f.write(out+"\n")
-#         
-#     f.close()
