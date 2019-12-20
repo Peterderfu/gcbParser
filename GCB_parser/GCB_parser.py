@@ -18,7 +18,7 @@ def readPatterns(f):
             sys.exit("".join(["Invalid GCB index format at line#", str(lineCount) , " : ", line]))
     return out
 
-def processing(device,patterns,config):
+def config2List(device,patterns,config):
     if device.lower() == "fortigate":
         return fortigate.process(patterns,config)
     else:
@@ -38,7 +38,7 @@ DEVICE      = args.device
 tree = []
 #open files 
 try:
-    config = open(CONFIG_FILE)
+    config_file = open(CONFIG_FILE)
 except:
     sys.exit("".join(["Unable to open configuration : ",CONFIG_FILE]))
 try:
@@ -51,11 +51,19 @@ except:
     sys.exit("".join(["Unable to open output file : ",OUTPUT_FILE]))
 
 patterns = readPatterns(gcb_pat) # read the GCB�@patterns
-tree = processing(DEVICE,patterns,config)
+# tree = processing(DEVICE,patterns,config_file)
+# parsedConfig = processing(DEVICE,patterns,config_file)
+
+if DEVICE.lower() == "fortigate":
+    configList = fortigate.config2List(patterns,config_file)
+else:
+    configList = fortigate.config2List(patterns,config_file)
+    
+# configList = config2List(DEVICE,patterns,config_file)
 
 
-for [gcb, config] in patterns.items():
-    parsed = fortigate.recognizeGCB(gcb,config,tree)
+for [gcb, configPattern] in patterns.items():
+    parsed = fortigate.recognizeGCB(gcb,configPattern,configList)
     result = fortigate.validateGCB(gcb, parsed)
     if result:
         for r in range(len(result)):
