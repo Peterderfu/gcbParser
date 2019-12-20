@@ -233,9 +233,10 @@ def isnt_root(node):
     return not (node.identifier == TREE_ROOT)
 def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
-def recognizeGCB(gcbIndex,confPattern,tree):
+# def recognizeGCB(gcbIndex,confPattern,tree):
+def recognizeGCB(gcbIndex,confPattern,paths):
     out = []
-    paths = tree.paths_to_leaves() # all paths from root to leaves
+#     paths = tree.paths_to_leaves() # all paths from root to leaves
     
     for path in paths: # examine every path 
         matched = False
@@ -371,7 +372,8 @@ def debug(lineCount,preLevel,curLevel,curNode,curTop):
     print(''.join(['curNd.p :',str(curNode.bpointer)]))
     print(''.join(['curTop :',str(curTop.identifier)]))
     print('-'*100)
-def process(patterns,config):
+# def process(patterns,config):
+def config2List(patterns,config):
     configCmd = readValidcmd(patterns)
     flagEnterConfigSec = False # flag of config section entered
     flagSkipConfigSec  = False # flag of skipping config section
@@ -433,4 +435,5 @@ def process(patterns,config):
         else:
             pass   # should not stop here
     
-    return tree
+#     return tree
+    return tree.paths_to_leaves() # all paths from root to leaves
