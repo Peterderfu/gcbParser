@@ -233,11 +233,8 @@ def isnt_root(node):
     return not (node.identifier == TREE_ROOT)
 def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
-# def recognizeGCB(gcbIndex,confPattern,tree):
 def recognizeGCB(gcbIndex,confPattern,paths):
     out = []
-#     paths = tree.paths_to_leaves() # all paths from root to leaves
-    
     for path in paths: # examine every path 
         matched = False
         for pattern in confPattern:
@@ -247,13 +244,13 @@ def recognizeGCB(gcbIndex,confPattern,paths):
                 while (curNode < len(path)):
                     #if current node in path matched to current pattern, step to the next node and pattern
                     if pattern['fuzzyMatch'] == True:
-                        if re.search(pattern['pattern'],tree.get_node(path[curNode]).tag):
+                        if re.search(pattern['pattern'],path[curNode]):
                             matched = True
                             break
                         else:
                             matched = False
                     else:
-                        if (pattern['pattern'] == tree.get_node(path[curNode]).tag):
+                        if (pattern['pattern'] == path[curNode]):
                             matched = True
                             break
                         else:
@@ -261,8 +258,7 @@ def recognizeGCB(gcbIndex,confPattern,paths):
                     curNode += 1
                         
         if matched:
-            result = [tree.get_node(n).tag for n in path[1:]] # ignore root
-            out.append(result)
+            out.append(path)
     return out
 
 def validateGCB(gcbIndex,config):
@@ -372,7 +368,6 @@ def debug(lineCount,preLevel,curLevel,curNode,curTop):
     print(''.join(['curNd.p :',str(curNode.bpointer)]))
     print(''.join(['curTop :',str(curTop.identifier)]))
     print('-'*100)
-# def process(patterns,config):
 def config2List(patterns,config):
     configCmd = readValidcmd(patterns)
     flagEnterConfigSec = False # flag of config section entered
@@ -422,18 +417,21 @@ def config2List(patterns,config):
                 preLevel = curLevel
                 
             flagEnterConfigSec = (curLevel != 0) #if curLevel == 0, flagEnterConfigSec = False
-#             debug(lineCount,preLevel,curLevel, curNode, curTop)
         elif (curLevel > preLevel):
             curTop = curNode
             curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
             preLevel = curLevel
-#             debug(lineCount,preLevel,curLevel, curNode, curTop)
         elif (curLevel == preLevel):
             curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
             preLevel = curLevel
-#             debug(lineCount,preLevel,curLevel, curNode, curTop)
-        else:
-            pass   # should not stop here
+        else: # curLevel < preLevel
+            curNode = tree.parent(curNode.identifier)
+            curTop = tree.parent(curNode.identifier)
+            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
+            preLevel = curLevel
     
-#     return tree
-    return tree.paths_to_leaves() # all paths from root to leaves
+    res = []
+    
+    for path in tree.paths_to_leaves():
+        res.append([tree.get_node(nid).tag for nid in path[1:]])
+    return res # all paths from root to leaves

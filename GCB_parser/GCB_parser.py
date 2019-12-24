@@ -35,7 +35,6 @@ GCB_PATTERN = args.pattern
 OUTPUT_FILE = args.output
 DEVICE      = args.device
 
-tree = []
 #open files 
 try:
     config_file = open(CONFIG_FILE)
@@ -51,16 +50,11 @@ except:
     sys.exit("".join(["Unable to open output file : ",OUTPUT_FILE]))
 
 patterns = readPatterns(gcb_pat) # read the GCB�@patterns
-# tree = processing(DEVICE,patterns,config_file)
-# parsedConfig = processing(DEVICE,patterns,config_file)
 
 if DEVICE.lower() == "fortigate":
     configList = fortigate.config2List(patterns,config_file)
 else:
     configList = fortigate.config2List(patterns,config_file)
-    
-# configList = config2List(DEVICE,patterns,config_file)
-
 
 for [gcb, configPattern] in patterns.items():
     parsed = fortigate.recognizeGCB(gcb,configPattern,configList)
