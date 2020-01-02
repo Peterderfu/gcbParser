@@ -1,7 +1,7 @@
 GCB_Fortinet_Fortigate_01,config system interface,edit <interface_name>,set allowaccess <access_types>
 GCB_Fortinet_Fortigate_02,config system interface,edit <interface_name>,set description <text>
 GCB_Fortinet_Fortigate_03,config system interface,edit <interface_name>,set broadcast-forward "disable"
-GCB_Fortinet_Fortigate_04,config system interface,edit <interface_name>,set drop-fragment "disable" 
+GCB_Fortinet_Fortigate_04,config system interface,edit <interface_name>,set drop-fragment "enable" 
 GCB_Fortinet_Fortigate_05,config system interface,edit <interface_name>,set drop-overlappedfragment "enable" 
 GCB_Fortinet_Fortigate_06,config system interface,edit <interface_name>,set fail-detect "enable" 
 GCB_Fortinet_Fortigate_07,config system password-policy,set status "enable" 
@@ -33,8 +33,8 @@ GCB_Fortinet_Fortigate_32,config system global,set fds-statistics "disable"
 GCB_Fortinet_Fortigate_33,config system global,set admin-ssh-grace-time <number>
 GCB_Fortinet_Fortigate_34,config system global,set admin-login-max <number>
 GCB_Fortinet_Fortigate_35,config system global,set admin-reset-button "disable"
-GCB_Fortinet_Fortigate_36,config system global,set cfg-save manual
-GCB_Fortinet_Fortigate_37,config system snmp user,edit <username>,set set security-level auth-priv
+GCB_Fortinet_Fortigate_36,config system global,set cfg-save "manual"
+GCB_Fortinet_Fortigate_37,config system snmp user,edit <username>,set security-level auth-priv
 GCB_Fortinet_Fortigate_38,config system snmp user,edit <username>,set priv-proto aes256
 GCB_Fortinet_Fortigate_39,config system snmp user,edit <username>,set auth-proto sha
 GCB_Fortinet_Fortigate_40,config system snmp user,edit <username>,set query-port <port_int>
