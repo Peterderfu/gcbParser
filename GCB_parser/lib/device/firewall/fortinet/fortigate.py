@@ -361,32 +361,41 @@ def validateGCB(gcbIndex,config):
 def isConfigBlkEnd(line):
     return (line.lower() in ["end","next"])
 def debug(lineCount,preLevel,curLevel,curNode,curTop):
-    print(''.join(['line  :',str(lineCount)]))
-    print(''.join(['preLv :',str(preLevel)]))
-    print(''.join(['curLv :',str(curLevel)]))
-    print(''.join(['curNd :',str(curNode.identifier)]))
-    print(''.join(['curNd.p :',str(curNode.bpointer)]))
-    print(''.join(['curTop :',str(curTop.identifier)]))
-    print('-'*100)
+#     print(''.join(['line  :',str(lineCount)]))
+#     print(''.join(['preLv :',str(preLevel)]))
+#     print(''.join(['curLv :',str(curLevel)]))
+#     print(''.join(['curNd :',str(curNode.identifier)]))
+#     print(''.join(['curNd.p :',str(curNode.bpointer)]))
+#     print(''.join(['curTop :',str(curTop.identifier)]))
+#     print('-'*100)
+    tree.show(key=lambda x:x.identifier)
+def shiftUpParent(tree,node, level):
+    while (level > 0):
+        node = tree.parent(node.identifier)
+        level -= 1
+    return node   
 def config2List(patterns,config):
     configCmd = readValidcmd(patterns)
     flagEnterConfigBlk = False # flag of config block entered
     flagSkipConfigBlk  = False # flag of skipping config block
-    curLevel =  0    # the hierarchical position this line
+    lineCount = 0              # the number of lines processed
+    curLevel = -1    # the hierarchical position this line
     preLevel = -1    # the hierarchical position of previous line in processing
     
     #start to feed configuration item into data structure of tree
     tree = Tree()
     curNode = tree.create_node(tag=TREE_ROOT, identifier=TREE_ROOT) # create a tree with root
-    curTop = curNode  # set parent to current node(root now)
+    curTop = preNode = curNode  # set parent to current node(root now)
     
     for line in config.readlines():
         lineCount += 1
         line = line.rstrip() #ignore tailing space or newline
-        
+        if (len(line) == 0): # skip empty line
             continue # skip to next line
+        preLevel = curLevel
+        preNode = curNode
         curLevel = getLevel(line) # get the hierarchical position of this line 
-        line = line.strip()  #ignore leading space
+#         line = line.strip()  #ignore leading space
         
         if (flagSkipConfigBlk == True):  # if SkipConfigBlk flag set to true previously, we should skip to next line based on isConfigBlkEnd 
             flagSkipConfigBlk = not isConfigBlkEnd(line)  # the condition of config block end occurs 
@@ -395,38 +404,25 @@ def config2List(patterns,config):
         # flagSkipConfigBlk is False and process goes below
         
         if (flagEnterConfigBlk == False): # 
-            if (re.search("^config\s\w+", line)): # search config block start
-                if (line in configCmd): # test whether this config command searched needed or not?  
-                    flagEnterConfigBlk = True
-                else:
-                    flagSkipConfigBlk = True # this config blocktion is not needed for further processing
-                    continue # skip to next line
+            if (re.search("^config\s\w+", line) and (line in configCmd)): # search config block start
+                flagEnterConfigBlk = True
             else:
-                continue  # skip to next line
-        # Below is config block processing
-        if (isConfigBlkEnd(line)):
-            curNode = tree.parent(curNode.identifier)
-            curTop = tree.parent(curNode.identifier)
-            if (curLevel == 0):
-                preLevel = -1
+                flagSkipConfigBlk = True # this config blocktion is not needed for further processing
+                continue # skip to next line
+        else:
+            if (isConfigBlkEnd(line)): # is top most config block end?
+                flagEnterConfigBlk = False
                 curTop = tree.get_node(tree.root)
-                curNode = curTop
+                continue
             else:
-                preLevel = curLevel
-                
-            flagEnterConfigBlk = (curLevel != 0) #if curLevel == 0, flagEnterConfigBlk = False
-        elif (curLevel > preLevel):
-            curTop = curNode
-            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
-            preLevel = curLevel
-        elif (curLevel == preLevel):
-            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
-            preLevel = curLevel
-        else: # curLevel < preLevel
-            curNode = tree.parent(curNode.identifier)
-            curTop = tree.parent(curNode.identifier)
-            curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
-            preLevel = curLevel
+                if (curLevel < preLevel):
+#                     curTop = tree.parent(curTop.identifier) #shift up parent
+                    curTop = shiftUpParent(tree,curTop,preLevel-curLevel)
+                    if (isConfigBlkEnd(line.lstrip())):  # is line matched block end?
+                        continue
+        if (curLevel > preLevel):
+            curTop = preNode
+        curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line.lstrip(), parent=curTop)
     
     res = []
     
