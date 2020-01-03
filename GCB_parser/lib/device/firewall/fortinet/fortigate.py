@@ -358,7 +358,7 @@ def validateGCB(gcbIndex,config):
         return [validate_GCB_Fortinet_Fortigate_47(c) for c in config]
     else:
         return None
-def isConfigSecEnd(line):
+def isConfigBlkEnd(line):
     return (line.lower() in ["end","next"])
 def debug(lineCount,preLevel,curLevel,curNode,curTop):
     print(''.join(['line  :',str(lineCount)]))
@@ -370,43 +370,41 @@ def debug(lineCount,preLevel,curLevel,curNode,curTop):
     print('-'*100)
 def config2List(patterns,config):
     configCmd = readValidcmd(patterns)
-    flagEnterConfigSec = False # flag of config section entered
-    flagSkipConfigSec  = False # flag of skipping config section
-    lineCount = 0              # the number of lines processed
+    flagEnterConfigBlk = False # flag of config block entered
+    flagSkipConfigBlk  = False # flag of skipping config block
     curLevel =  0    # the hierarchical position this line
     preLevel = -1    # the hierarchical position of previous line in processing
     
-    #start to feed configuration item into data structure
+    #start to feed configuration item into data structure of tree
     tree = Tree()
-    curNode = tree.create_node(tag=TREE_ROOT, identifier=TREE_ROOT)
-    curTop = curNode
+    curNode = tree.create_node(tag=TREE_ROOT, identifier=TREE_ROOT) # create a tree with root
+    curTop = curNode  # set parent to current node(root now)
     
     for line in config.readlines():
         lineCount += 1
         line = line.rstrip() #ignore tailing space or newline
         
-        if (len(line) == 0): # skip empty line
             continue # skip to next line
         curLevel = getLevel(line) # get the hierarchical position of this line 
-        line = line.strip()
+        line = line.strip()  #ignore leading space
         
-        if (flagSkipConfigSec == True):  # if SkipConfigSec flag set to true previously, we should skip to next line based on isConfigSecEnd 
-            flagSkipConfigSec = not isConfigSecEnd(line)  # the condition of config section end occurs 
+        if (flagSkipConfigBlk == True):  # if SkipConfigBlk flag set to true previously, we should skip to next line based on isConfigBlkEnd 
+            flagSkipConfigBlk = not isConfigBlkEnd(line)  # the condition of config block end occurs 
             continue # skip to next line
         
-        # flagSkipConfigSec is False and process goes below
+        # flagSkipConfigBlk is False and process goes below
         
-        if (flagEnterConfigSec == False): # 
-            if (re.search("^config\s\w+", line)): # search config section start
+        if (flagEnterConfigBlk == False): # 
+            if (re.search("^config\s\w+", line)): # search config block start
                 if (line in configCmd): # test whether this config command searched needed or not?  
-                    flagEnterConfigSec = True
+                    flagEnterConfigBlk = True
                 else:
-                    flagSkipConfigSec = True # this config section is not needed for further processing
+                    flagSkipConfigBlk = True # this config blocktion is not needed for further processing
                     continue # skip to next line
             else:
                 continue  # skip to next line
-        # Below is config section processing
-        if (isConfigSecEnd(line)):
+        # Below is config block processing
+        if (isConfigBlkEnd(line)):
             curNode = tree.parent(curNode.identifier)
             curTop = tree.parent(curNode.identifier)
             if (curLevel == 0):
@@ -416,7 +414,7 @@ def config2List(patterns,config):
             else:
                 preLevel = curLevel
                 
-            flagEnterConfigSec = (curLevel != 0) #if curLevel == 0, flagEnterConfigSec = False
+            flagEnterConfigBlk = (curLevel != 0) #if curLevel == 0, flagEnterConfigBlk = False
         elif (curLevel > preLevel):
             curTop = curNode
             curNode = tree.create_node(identifier='{:08d}'.format(lineCount),tag=line, parent=curTop)
