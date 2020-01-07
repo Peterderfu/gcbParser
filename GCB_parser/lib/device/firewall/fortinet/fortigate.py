@@ -10,33 +10,33 @@ NOT_SETTING = '2'
 TREE_ROOT = "root"
 VALIDATION_DESCRIP = {VALID_SETTING: "正確設定", INVALID_SETTING: "錯誤設定",NOT_SETTING: "尚未設定"}
 DEMO_MODE = os.environ.get("DEMO_MODE", None)
-def compareMethod_1(pattern, config):
+def compareMethod_1(pattern, config,start=-1):
 # input: 
 #     pattern = [prefix,option]
 #     config: the string to be compared with pattern
 # procedure:
 #     compare the config with pattern.prefix and pattern.option
-    if not config[-1].startswith(pattern[0]):
+    if not config[start].startswith(pattern[0]):
         return NOT_SETTING
     else:
-        if config[-1].split(" ")[-1] == pattern[1]:
+        if config[start].split(" ")[-1] == pattern[1]:
             return  VALID_SETTING
         else:
             return INVALID_SETTING
-def compareMethod_2(op,pattern,config):
-    if not config[-1].startswith(pattern[0]):
+def compareMethod_2(op,pattern,config,start=-1):
+    if not config[start].startswith(pattern[0]):
         return NOT_SETTING
     else:
         if op == "<":
-            out = int(config[-1].split(" ")[-1]) < int(pattern[1])
+            out = int(config[start].split(" ")[-1]) < int(pattern[1])
         elif op == ">":
-            out = int(config[-1].split(" ")[-1]) > int(pattern[1])
+            out = int(config[start].split(" ")[-1]) > int(pattern[1])
         elif op == ">=":
-            out = int(config[-1].split(" ")[-1]) >= int(pattern[1])
+            out = int(config[start].split(" ")[-1]) >= int(pattern[1])
         elif op == "<=":
-            out = int(config[-1].split(" ")[-1]) <= int(pattern[1])
+            out = int(config[start].split(" ")[-1]) <= int(pattern[1])
         elif op == "!=":
-            out = int(config[-1].split(" ")[-1]) != int(pattern[1])
+            out = int(config[start].split(" ")[-1]) != int(pattern[1])
         else:
             sys.exit("Invalid comparison operator")
         return VALID_SETTING if (out == True) else INVALID_SETTING
@@ -82,7 +82,7 @@ def validate_GCB_Fortinet_Fortigate_08(config):
     return compareMethod_1(["set apply-to", "admin-password"],config)
 def validate_GCB_Fortinet_Fortigate_09(config):
 #pattern : "set min-lower-case-letter <number>" , and number >=1
-    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config)  
+    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config,)  
 def validate_GCB_Fortinet_Fortigate_10(config):
 #pattern : "set min-upper-case-letter <number>" , and number >=1
     return compareMethod_2("=>",["set min-upper-case-letter", "1"],config)
@@ -101,16 +101,18 @@ def validate_GCB_Fortinet_Fortigate_14(config):
 def validate_GCB_Fortinet_Fortigate_15(config):
 #pattern :　set expire-status enable 
     return compareMethod_1(["set expire-status", "enable"],config)
+# def validate_GCB_Fortinet_Fortigate_16(config):
+# #pattern :　set expire 90 
+#     return compareMethod_2("<=",["set expire", "90"],config)
+# def validate_GCB_Fortinet_Fortigate_17(config):
 def validate_GCB_Fortinet_Fortigate_16(config):
-#pattern :　set expire 90 
-    return compareMethod_2("<=",["set expire", "90"],config)
-def validate_GCB_Fortinet_Fortigate_17(config):
 #pattern :　set expire-day 14
-    return compareMethod_2("<=",["set expire-day", "14"],config)
-def validate_GCB_Fortinet_Fortigate_18(config):
+#     return compareMethod_2("<=",["set expire-day", "14"],config)
+    return compareMethod_2("<=",["set expire-day", "90"],config)
+def validate_GCB_Fortinet_Fortigate_17(config):
 #pattern :　set ntpsync enable 
     return compareMethod_1(["set ntpsync", "enable"],config)
-def validate_GCB_Fortinet_Fortigate_19(config):
+def validate_GCB_Fortinet_Fortigate_18(config):
 #pattern :　set ntp-server1 <ipv4_addr>,set ntp-server2 <ipv4_addr>
     ipv4re = '([0-9]{1,3}\.){3}[0-9]{1,3}' #ipv4 regular expression
     if (config and len(config)==3):
@@ -119,31 +121,31 @@ def validate_GCB_Fortinet_Fortigate_19(config):
         return VALID_SETTING if (s1 == "set ntp-server1" and re.search(ipv4re, ip1) and s2 == "set ntp-server2" and re.search(ipv4re, ip2)) else INVALID_SETTING
     else:
         return NOT_SETTING
-def validate_GCB_Fortinet_Fortigate_20(config):
+def validate_GCB_Fortinet_Fortigate_19(config):
 #pattern :　set ntpv3 enable 
     return compareMethod_1(["set ntpv3", "enable"],config)
-def validate_GCB_Fortinet_Fortigate_21(config):
+def validate_GCB_Fortinet_Fortigate_20(config):
 #pattern :　set password <admin_password>
     if config and len(config)==3:
         return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
     else:
         return NOT_SETTING
-def validate_GCB_Fortinet_Fortigate_22(config):
+def validate_GCB_Fortinet_Fortigate_21(config):
 #pattern :　set force-password-change enable 
     return compareMethod_1(["set force-password-change", "enable"],config)
-def validate_GCB_Fortinet_Fortigate_23(config):
+def validate_GCB_Fortinet_Fortigate_22(config):
 #pattern :　set guest-auth disable
     return compareMethod_1(["set guest-auth", "disable"], config)
-def validate_GCB_Fortinet_Fortigate_24(config):
+def validate_GCB_Fortinet_Fortigate_23(config):
 #pattern :　set allow-remove-adminsession disable 
     return compareMethod_1(["set allow-remove-adminsession", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_25(config):
+def validate_GCB_Fortinet_Fortigate_24(config):
 #pattern :　set auto-install-config disable 
     return compareMethod_1(["set auto-install-config", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_26(config):
+def validate_GCB_Fortinet_Fortigate_25(config):
 #pattern :　set auto-install-image disable 
     return compareMethod_1(["set auto-install-image", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_27(config):
+def validate_GCB_Fortinet_Fortigate_26(config):
 #pattern :　set admin-https-ssl-versions tlsv1-0 tlsv1-1 tlsv1-2
     config = ["config system global","set admin-https-ssl-versions sslv3 tlsv1-2"] if (DEMO_MODE==True) else config
     SSL_SETS = ["tlsv1-0", "tlsv1-1", "tlsv1-2"]
@@ -155,72 +157,72 @@ def validate_GCB_Fortinet_Fortigate_27(config):
     else:
         return INVALID_SETTING
 #     return compareMethod_1(["set admin-https-ssl-versions", "tlsv1-0 tlsv1-1 tlsv1-2"],config)
-def validate_GCB_Fortinet_Fortigate_28(config):
+def validate_GCB_Fortinet_Fortigate_27(config):
 #pattern :　set admin-https-redirect enable 
     return compareMethod_1(["set admin-https-redirect", "enable"],config)
 #     return (VALID_SETTING if (config[-1].strip() == "set admin-https-redirect enable") else INVALID_SETTING) if (config and len(config)==2) else NOT_SETTING
-def validate_GCB_Fortinet_Fortigate_29(config):
+def validate_GCB_Fortinet_Fortigate_28(config):
 #pattern :　set admin-lockout-threshold <number>, number<=3
     return compareMethod_2("<=",["set admin-lockout-threshold", "3"],config)  
-def validate_GCB_Fortinet_Fortigate_30(config):
+def validate_GCB_Fortinet_Fortigate_29(config):
 #pattern :　set admin-lockout-duration <number>, number >=900
     return compareMethod_2(">=",["set admin-lockout-duration", "900"],config)  
 #     return compareMethod_1(["set admin-lockout-duration", "900"],config) 
-def validate_GCB_Fortinet_Fortigate_31(config):
+def validate_GCB_Fortinet_Fortigate_30(config):
 #pattern :　set hostname <unithostname>
     if config and len(config)==2:
         return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
     else:
         return NOT_SETTING
-def validate_GCB_Fortinet_Fortigate_32(config):
+def validate_GCB_Fortinet_Fortigate_31(config):
 #pattern :　 set fds-statistics disable 
     return compareMethod_1(["set fds-statistics", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_33(config):
+def validate_GCB_Fortinet_Fortigate_32(config):
 #pattern : "set admin-ssh-grace-time <number>" , and number <=900
     return compareMethod_2("<=",["set admin-ssh-grace-time", "900"],config)  
-def validate_GCB_Fortinet_Fortigate_34(config):
+def validate_GCB_Fortinet_Fortigate_33(config):
 #pattern : "set admin-login-max <number>" , and number <=1
     return compareMethod_2("<=",["set admin-login-max", "1"],config)  
-def validate_GCB_Fortinet_Fortigate_35(config):
+def validate_GCB_Fortinet_Fortigate_34(config):
 #pattern :　 set admin-reset-button disable 
     return compareMethod_1(["set admin-reset-button", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_36(config):
+def validate_GCB_Fortinet_Fortigate_35(config):
 #pattern :　 set cfg-save manual 
     return compareMethod_1(["set cfg-save", "manual"],config)
-def validate_GCB_Fortinet_Fortigate_37(config):
+def validate_GCB_Fortinet_Fortigate_36(config):
 #pattern :　 set security-level auth-priv 
     return compareMethod_1(["set security-level", "auth-priv"],config)
-def validate_GCB_Fortinet_Fortigate_38(config):
+def validate_GCB_Fortinet_Fortigate_37(config):
 #pattern :　 set priv-proto aes256 
     return compareMethod_1(["set priv-proto", "aes256"],config)
-def validate_GCB_Fortinet_Fortigate_39(config):
+def validate_GCB_Fortinet_Fortigate_38(config):
 #pattern :　 set auth-proto sha 
     return compareMethod_1(["set priv-proto", "sha"],config)
-def validate_GCB_Fortinet_Fortigate_40(config):
+def validate_GCB_Fortinet_Fortigate_39(config):
 #pattern : set query-port <port_int> , and port_int !=161
     return compareMethod_2("!=",["set query-port", "161"],config)  
-def validate_GCB_Fortinet_Fortigate_41(config):
+def validate_GCB_Fortinet_Fortigate_40(config):
 #pattern :　set name <community_name>
     if config and len(config)==3:
         return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
     else:
         return NOT_SETTING
-def validate_GCB_Fortinet_Fortigate_42(config):
+def validate_GCB_Fortinet_Fortigate_41(config):
 #pattern :　 set query-v1-status disable 
     return compareMethod_1(["set query-v1-status", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_43(config):
+def validate_GCB_Fortinet_Fortigate_42(config):
 #pattern : set query-v1-prot <port_int> , and port_int !=161
     return compareMethod_2("!=",["set query-v1-prot", "161"],config)  
-def validate_GCB_Fortinet_Fortigate_44(config):
+def validate_GCB_Fortinet_Fortigate_43(config):
 #pattern :　 set query-v2c-status disable 
     return compareMethod_1(["set query-v2c-status", "disable"],config)
-def validate_GCB_Fortinet_Fortigate_45(config):
+def validate_GCB_Fortinet_Fortigate_44(config):
 #pattern : set query-v2c-prot <port_int> , and port_int !=161
     return compareMethod_2("!=",["set query-v2c-prot", "161"],config)  
-def validate_GCB_Fortinet_Fortigate_46(config):
+def validate_GCB_Fortinet_Fortigate_45(config):
 #pattern :　 set log-invalid-packet enable
     return compareMethod_1(["set log-invalid-packet", "enable"],config) 
-def validate_GCB_Fortinet_Fortigate_47(config):
+def validate_GCB_Fortinet_Fortigate_46(config):
 #pattern :　 set user-anonymize disable 
     return compareMethod_1(["set user-anonymize", "disable"],config)
 
@@ -235,7 +237,9 @@ def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
 def recognizeGCB(gcbIndex,confPattern,paths):
     out = []
+    tmpOut = set()
     for path in paths: # examine every path 
+#         [path, id] = p.split(":")
         matched = False
         for pattern in confPattern:
             # compare the individual pattern with nodes in path
@@ -244,13 +248,15 @@ def recognizeGCB(gcbIndex,confPattern,paths):
                 while (curNode < len(path)):
                     #if current node in path matched to current pattern, step to the next node and pattern
                     if pattern['fuzzyMatch'] == True:
-                        if re.search(pattern['pattern'],path[curNode]):
+#                         if re.search(pattern['pattern'],path[curNode]):
+                        if re.search(pattern['pattern'],path[curNode].split(":")[-1]):
                             matched = True
                             break
                         else:
                             matched = False
                     else:
-                        if (pattern['pattern'] == path[curNode]):
+#                         if (pattern['pattern'] == path[curNode]):
+                        if (pattern['pattern'] == path[curNode].split(":")[-1]):
                             matched = True
                             break
                         else:
@@ -258,10 +264,19 @@ def recognizeGCB(gcbIndex,confPattern,paths):
                     curNode += 1
                         
         if matched:
-            out.append(path)
+            s = "".join(path[:len(confPattern)])
+            if not s in tmpOut:
+                out.append(path[:len(confPattern)])
+                tmpOut.add(s)
+#         if matched:
+#            s = "".join(p[:len(confPattern)])
+#            if not s in tmpOut:
+#                out.append(p[:len(confPattern)])
+#                tmpOut.add(s)
     return out
 
 def validateGCB(gcbIndex,config):
+    config = [[d.split(":")[-1] for d in c] for c in config] # remove line number
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
         return [validate_GCB_Fortinet_Fortigate_01(c) for c in config]
     elif  gcbIndex == "GCB_Fortinet_Fortigate_02":
@@ -427,5 +442,7 @@ def config2List(patterns,config):
     res = []
     
     for path in tree.paths_to_leaves():
-        res.append([tree.get_node(nid).tag for nid in path[1:]])
+        for nid in path[1:]:
+            res.append([":".join([tree.get_node(nid).identifier,tree.get_node(nid).tag]) for nid in path[1:]])
+#         res.append([tree.get_node(nid).tag for nid in path[1:]])
     return res # all paths from root to leaves
