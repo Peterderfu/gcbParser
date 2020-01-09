@@ -170,8 +170,17 @@ def validate_GCB_Fortinet_Fortigate_29(config):
 #     return compareMethod_1(["set admin-lockout-duration", "900"],config) 
 def validate_GCB_Fortinet_Fortigate_30(config):
 #pattern :　set hostname <unithostname>
+#https://www.manageengine.com/network-monitoring/device-discovery/fortinet-performance-monitoring.html
+#if hostname has the device number in url above, this config is invalid
+    devices = ["fgt","fg","fr","fw"]
     if config and len(config)==2:
-        return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
+        if (len(config[-1].split(" ")) >= 2): 
+            for d in devices:
+                if str(config[-1].split(" ")[-1]).lower().strip("\"").startswith(d):
+                    return INVALID_SETTING
+            return VALID_SETTING
+        else: 
+            return INVALID_SETTING
     else:
         return NOT_SETTING
 def validate_GCB_Fortinet_Fortigate_31(config):
@@ -235,46 +244,70 @@ def isnt_root(node):
     return not (node.identifier == TREE_ROOT)
 def getLevel(line):
     return int((len(line)-len(line.lstrip()))/len(LEADING_SPACE))
+# def recognizeGCB(gcbIndex,confPattern,paths):
+#     out = []
+#     tmpOut = set()
+#     for path in paths: # examine every path 
+#         matched = False
+#         for pattern in confPattern:
+#             # compare the individual pattern with nodes in path
+#             if ((pattern == confPattern[0]) or matched):
+#                 curNode = 0
+#                 while (curNode < len(path)):
+#                     #if current node in path matched to current pattern, step to the next node and pattern
+#                     if pattern['fuzzyMatch'] == True:
+#                         if re.search(pattern['pattern'],path[curNode].split(":")[-1]):
+#                             matched = True
+#                             break
+#                         else:
+#                             matched = False
+#                     else:
+#                         if (pattern['pattern'] == path[curNode].split(":")[-1]):
+#                             matched = True
+#                             break
+#                         else:
+#                             matched = False
+#                     curNode += 1
+#                         
+#         if matched:
+#             s = "".join(path[:len(confPattern)])
+#             if not s in tmpOut:
+#                 out.append(path[:len(confPattern)])
+#                 tmpOut.add(s)
+#     return out
+def cmp(config, setting):
+#     if config['fuzzyMatch'] == True:
+#         return re.search(config['pattern'],setting) is not None
+#     else:
+#         return config['pattern'] == setting
+    return (re.search(config['pattern'],setting) is not None) if config['fuzzyMatch'] else (config['pattern'] == setting)
+     
 def recognizeGCB(gcbIndex,confPattern,paths):
     out = []
     tmpOut = set()
     for path in paths: # examine every path 
-#         [path, id] = p.split(":")
+        if len(path) < len(confPattern): # path with length smaller than confPattern is invalid 
+            continue
         matched = False
-        for pattern in confPattern:
-            # compare the individual pattern with nodes in path
-            if ((pattern == confPattern[0]) or matched):
-                curNode = 0
-                while (curNode < len(path)):
-                    #if current node in path matched to current pattern, step to the next node and pattern
-                    if pattern['fuzzyMatch'] == True:
-#                         if re.search(pattern['pattern'],path[curNode]):
-                        if re.search(pattern['pattern'],path[curNode].split(":")[-1]):
-                            matched = True
-                            break
-                        else:
-                            matched = False
-                    else:
-#                         if (pattern['pattern'] == path[curNode]):
-                        if (pattern['pattern'] == path[curNode].split(":")[-1]):
-                            matched = True
-                            break
-                        else:
-                            matched = False
-                    curNode += 1
-                        
+        c_start = p_start = 0
+        for c in confPattern[c_start:]:
+            p_count = 0
+            for p in path[p_start:]:
+                p_count += 1
+                matched = cmp(c,p.split(":")[-1])
+                if matched:
+                    p_start += 1
+                    break
+            if not matched:
+                break
         if matched:
-            s = "".join(path[:len(confPattern)])
+            s = "".join(path[:path.index(p)+1])
+#             s = "".join(path[:p_start])
             if not s in tmpOut:
-                out.append(path[:len(confPattern)])
+                out.append(path[:path.index(p)+1])
+#                 out.append(path[:p_start])
                 tmpOut.add(s)
-#         if matched:
-#            s = "".join(p[:len(confPattern)])
-#            if not s in tmpOut:
-#                out.append(p[:len(confPattern)])
-#                tmpOut.add(s)
     return out
-
 def validateGCB(gcbIndex,config):
     config = [[d.split(":")[-1] for d in c] for c in config] # remove line number
     if    gcbIndex == "GCB_Fortinet_Fortigate_01":
