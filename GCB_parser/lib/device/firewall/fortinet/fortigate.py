@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from lib.treelib import Tree
-from contextlib import redirect_stdout
 import re, pprint,sys,os
 GCB_INDEX_PAT = '^GCB_[a-zA-Z0-9]+_[a-zA-Z0-9]+_\d{2},\w+'
 LEADING_SPACE = " " * 4
@@ -27,23 +26,25 @@ def compareMethod_1(pattern, config,start=-1):
             return  VALID_SETTING
         else:
             return INVALID_SETTING
-def compareMethod_2(op,pattern,config,start=-1):
+def compareMethod_2(op,pattern,config):
+    start = -1
     if not config[start].startswith(pattern[0]):
         return NOT_SETTING
     else:
-        if op == "<":
-            out = int(config[start].split(" ")[-1]) < int(pattern[1])
+        operand = [int(config[start].split(" ")[-1]),int(pattern[1])]
+        if   op == "<":
+            tmp = operand[0] <  operand[1]
         elif op == ">":
-            out = int(config[start].split(" ")[-1]) > int(pattern[1])
+            tmp = operand[0] >  operand[1]
         elif op == ">=":
-            out = int(config[start].split(" ")[-1]) >= int(pattern[1])
+            tmp = operand[0] >= operand[1]
         elif op == "<=":
-            out = int(config[start].split(" ")[-1]) <= int(pattern[1])
+            tmp = operand[0] <= operand[1]
         elif op == "!=":
-            out = int(config[start].split(" ")[-1]) != int(pattern[1])
+            tmp = operand[0] != operand[1]
         else:
             sys.exit("Invalid comparison operator")
-        return VALID_SETTING if (out == True) else INVALID_SETTING
+        return VALID_SETTING if (tmp == True) else INVALID_SETTING
 @register
 def validate_GCB_Fortinet_Fortigate_01(config):
 #NO http/telnet following "set allowaccess"
@@ -95,7 +96,7 @@ def validate_GCB_Fortinet_Fortigate_08(config):
 @register
 def validate_GCB_Fortinet_Fortigate_09(config):
 #pattern : "set min-lower-case-letter <number>" , and number >=1
-    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config,)  
+    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config)  
 @register
 def validate_GCB_Fortinet_Fortigate_10(config):
 #pattern : "set min-upper-case-letter <number>" , and number >=1

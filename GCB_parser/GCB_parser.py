@@ -25,17 +25,19 @@ def config2List(device,patterns,config):
         return fortigate.process(patterns,config)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--read", help="the path of configuration to be parsed")
-parser.add_argument("-p", "--pattern", help="the path of GCB patterns")
-parser.add_argument("-o", "--output", help="the path of output file")
-parser.add_argument("-d", "--device", help="the device name, should be one of : FortiNet/Cisco/Juniper")
-parser.add_argument("--debug", help="enter debug mode",action="store_true", default=False)
+parser.add_argument("-r", "--read", help = "the path of configuration to be parsed")
+parser.add_argument("-p", "--pattern", help = "the path of GCB patterns")
+parser.add_argument("-o", "--output", help = "the path of output file")
+parser.add_argument("-d", "--device", help = "the device name, should be one of : FortiNet/Cisco/Juniper")
+parser.add_argument("--debug", help = "enter debug mode",action="store_true", default=False)
+parser.add_argument("--nonGCB", help = "input configuration is not GCB",action="store_true", default=False)
 args = parser.parse_args()
 CONFIG_FILE = args.read
 GCB_PATTERN = args.pattern
 OUTPUT_FILE = args.output
 DEVICE      = args.device
 DEBUG_MODE  = args.debug
+NONGCB      = args.nonGCB
 
 #open files 
 try:
