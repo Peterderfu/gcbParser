@@ -29,11 +29,13 @@ parser.add_argument("-r", "--read", help="the path of configuration to be parsed
 parser.add_argument("-p", "--pattern", help="the path of GCB patterns")
 parser.add_argument("-o", "--output", help="the path of output file")
 parser.add_argument("-d", "--device", help="the device name, should be one of : FortiNet/Cisco/Juniper")
+parser.add_argument("--debug", help="enter debug mode",action="store_true", default=False)
 args = parser.parse_args()
 CONFIG_FILE = args.read
 GCB_PATTERN = args.pattern
 OUTPUT_FILE = args.output
 DEVICE      = args.device
+DEBUG_MODE  = args.debug
 
 #open files 
 try:
@@ -52,13 +54,13 @@ except:
 patterns = readPatterns(gcb_pat) # read the GCB�@patterns
 
 if DEVICE.lower() == "fortigate":
-    configList = fortigate.config2List(patterns,config_file)
+    configList = fortigate.config2List(patterns,config_file,DEBUG_MODE)
 else:
-    configList = fortigate.config2List(patterns,config_file)
+    configList = fortigate.config2List(patterns,config_file,DEBUG_MODE)
 
 for [gcb, configPattern] in patterns.items():
-    parsed = fortigate.recognizeGCB(gcb,configPattern,configList)
-    result = fortigate.validateGCB(gcb, parsed)
+    parsed = fortigate.recognizeGCB(gcb,configPattern,configList,DEBUG_MODE)
+    result = fortigate.validateGCB(gcb, parsed,DEBUG_MODE)
     if result:
         for r in range(len(result)):
             out = ",".join([gcb,",".join(parsed[r]) if parsed else "",fortigate.VALIDATION_DESCRIP[result[r]]])
