@@ -2,12 +2,30 @@
 import sys,re, argparse
 from lib.treelib import Tree,node  #https://treelib.readthedocs.io/en/latest/
 from lib.device.firewall.fortinet import fortigate
+from lib2to3.fixer_util import ArgList
+ARG_FILE = "arg.txt"
 def readPatterns(f):
+     out = dict()
+     lineCount = 0
+     for line in f.readlines():
+         lineCount += 1
+         if re.search(fortigate.GCB_INDEX_PAT, line):
+             tmpList = []
+             [key,patterns] = line.strip().split(",",maxsplit=1)
+             for p in patterns.split(","):
+                 (new_string, number_of_subs_made) =   re.subn("[<|\"].*[>|\"]",".*",p)
+                 tmpList.append({"pattern":new_string,"fuzzyMatch":(number_of_subs_made > 0)})
+             out[key] = tmpList
+         else:
+             sys.exit("".join(["Invalid GCB index format at line#", str(lineCount) , " : ", line]))
+     return out
+def readPatterns(f,nonGCB = False):
     out = dict()
     lineCount = 0
+    indexPat =  fortigate.NONGCB_INDEX_PAT if nonGCB else fortigate.GCB_INDEX_PAT
     for line in f.readlines():
         lineCount += 1
-        if re.search(fortigate.GCB_INDEX_PAT, line):
+        if re.search(indexPat, line):
             tmpList = []
             [key,patterns] = line.strip().split(",",maxsplit=1)
             for p in patterns.split(","):
@@ -15,7 +33,7 @@ def readPatterns(f):
                 tmpList.append({"pattern":new_string,"fuzzyMatch":(number_of_subs_made > 0)})
             out[key] = tmpList
         else:
-            sys.exit("".join(["Invalid GCB index format at line#", str(lineCount) , " : ", line]))
+            sys.exit("".join(["Invalid index format at line#", str(lineCount) , " : ", line]))
     return out
 
 def config2List(device,patterns,config):
@@ -30,14 +48,21 @@ parser.add_argument("-p", "--pattern", help = "the path of GCB patterns")
 parser.add_argument("-o", "--output", help = "the path of output file")
 parser.add_argument("-d", "--device", help = "the device name, should be one of : FortiNet/Cisco/Juniper")
 parser.add_argument("--debug", help = "enter debug mode",action="store_true", default=False)
-parser.add_argument("--nonGCB", help = "input configuration is not GCB",action="store_true", default=False)
-args = parser.parse_args()
+parser.add_argument("--nongcb", help = "input configuration is not GCB",action="store_true", default=False)
+with open(ARG_FILE) as f:
+    argsList = []
+    for line in f.readlines():
+        if line.startswith("--"):
+            argsList.append(line.strip())
+        elif line.startswith("-"):
+            argsList.extend(line.strip().split(" ",maxsplit=1))
+args = parser.parse_args(argsList)
 CONFIG_FILE = args.read
 GCB_PATTERN = args.pattern
 OUTPUT_FILE = args.output
 DEVICE      = args.device
 DEBUG_MODE  = args.debug
-NONGCB      = args.nonGCB
+NONGCB      = args.nongcb
 
 #open files 
 try:
@@ -53,7 +78,8 @@ try:
 except:
     sys.exit("".join(["Unable to open output file : ",OUTPUT_FILE]))
 
-patterns = readPatterns(gcb_pat) # read the GCB�@patterns
+# patterns = readPatterns(gcb_pat) # read the GCB�@patterns
+patterns = readPatterns(gcb_pat,NONGCB) # read the GCB�@patterns
 
 if DEVICE.lower() == "fortigate":
     configList = fortigate.config2List(patterns,config_file,DEBUG_MODE)
@@ -62,7 +88,7 @@ else:
 
 for [gcb, configPattern] in patterns.items():
     parsed = fortigate.recognizeGCB(gcb,configPattern,configList,DEBUG_MODE)
-    result = fortigate.validateGCB(gcb, parsed,DEBUG_MODE)
+    result = fortigate.validateGCB(gcb, parsed,DEBUG_MODE,NONGCB)
     if result:
         for r in range(len(result)):
             out = ",".join([gcb,",".join(parsed[r]) if parsed else "",fortigate.VALIDATION_DESCRIP[result[r]]])

@@ -1,0 +1,6 @@
+-r input/Fortinet/Forti_config_02.txt
+-p input/GCB_FortiGate.txt
+-o output/output.csv
+-d fortigate
+--debug
+--nongcb

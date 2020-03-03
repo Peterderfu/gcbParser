@@ -2,6 +2,7 @@
 from lib.treelib import Tree
 import re, pprint,sys,os
 GCB_INDEX_PAT = '^GCB_[a-zA-Z0-9]+_[a-zA-Z0-9]+_\d{2},\w+'
+NONGCB_INDEX_PAT = '\d+,\w+'
 LEADING_SPACE = " " * 4
 VALID_SETTING = '0'
 INVALID_SETTING = '1'
@@ -314,8 +315,10 @@ def recognizeGCB(gcbIndex,confPattern,paths,debug_mode=False):
                 out.append(path[:path.index(p)+1])
                 tmpOut.add(s)
     return out
-def validateGCB(gcbIndex,config,debug_mode=False):
-    if not re.search("^GCB_Fortinet_Fortigate_[0-9]{2}", gcbIndex):
+def validateGCB(gcbIndex,config,debug_mode = False,nonGCB = False):
+    indexPat = "^GCB_Fortinet_Fortigate_[0-9]{2}" if not nonGCB else "^\d+"
+        
+    if not re.search(indexPat, gcbIndex):
         return None
     else:
         if debug_mode:

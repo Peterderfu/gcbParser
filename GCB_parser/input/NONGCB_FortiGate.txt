@@ -1,0 +1,2 @@
+01,config system interface,edit <interface_name>,set allowaccess <access_types>
+02,config system interface,edit <interface_name>,set description <text>
