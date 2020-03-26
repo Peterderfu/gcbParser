@@ -97,23 +97,23 @@ def validate_GCB_Fortinet_Fortigate_08(config):
 @register
 def validate_GCB_Fortinet_Fortigate_09(config):
 #pattern : "set min-lower-case-letter <number>" , and number >=1
-    return compareMethod_2("=>",["set min-lower-case-letter", "1"],config)  
+    return compareMethod_2(">=",["set min-lower-case-letter", "1"],config)  
 @register
 def validate_GCB_Fortinet_Fortigate_10(config):
 #pattern : "set min-upper-case-letter <number>" , and number >=1
-    return compareMethod_2("=>",["set min-upper-case-letter", "1"],config)
+    return compareMethod_2(">=",["set min-upper-case-letter", "1"],config)
 @register
 def validate_GCB_Fortinet_Fortigate_11(config):
 #pattern : "set min-non-alphanumeric <number>" , and number >=1
-    return compareMethod_2("=>",["set min-non-alphanumeric", "1"],config)
+    return compareMethod_2(">=",["set min-non-alphanumeric", "1"],config)
 @register
 def validate_GCB_Fortinet_Fortigate_12(config):
 #pattern : "set min-number <number>" , and number >=1
-    return compareMethod_2("=>",["set min-number", "1"],config)
+    return compareMethod_2(">=",["set min-number", "1"],config)
 @register
 def validate_GCB_Fortinet_Fortigate_13(config):
 #pattern : "set minimum-length <number>" , and number >=12
-    return compareMethod_2("=>",["set minimum-length", "12"],config)
+    return compareMethod_2(">=",["set minimum-length", "12"],config)
 @register
 def validate_GCB_Fortinet_Fortigate_14(config):
 #pattern :　set change-4-characters enable 
@@ -324,6 +324,10 @@ def validateGCB(gcbIndex,config,debug_mode = False,nonGCB = False):
         if debug_mode:
             config = [[d.split(":")[-1] for d in c] for c in config] # remove line number
         index = "validate_" + gcbIndex
+#         for c in config:
+#             print(c)
+#         out = [plugins[index](c) for c in config]
+#         return out 
         return [plugins[index](c) for c in config]
 def isConfigBlkEnd(line):
     return (line.lower() in ["end","next"])

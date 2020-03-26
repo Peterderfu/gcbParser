@@ -78,8 +78,8 @@ try:
 except:
     sys.exit("".join(["Unable to open output file : ",OUTPUT_FILE]))
 
-# patterns = readPatterns(gcb_pat) # read the GCB�@patterns
-patterns = readPatterns(gcb_pat,NONGCB) # read the GCB�@patterns
+patterns = readPatterns(gcb_pat) # read the GCB�@patterns
+# patterns = readPatterns(gcb_pat,NONGCB) # read the GCB�@patterns
 
 if DEVICE.lower() == "fortigate":
     configList = fortigate.config2List(patterns,config_file,DEBUG_MODE)
