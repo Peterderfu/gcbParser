@@ -66,7 +66,7 @@ NONGCB      = args.nongcb
 
 #open files 
 try:
-    config_file = open(CONFIG_FILE)
+    config_file = open(CONFIG_FILE,encoding="utf-8")
 except:
     sys.exit("".join(["Unable to open configuration : ",CONFIG_FILE]))
 try:

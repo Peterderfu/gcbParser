@@ -1,5 +1,5 @@
--r input/Fortinet/FG300C3912604082_20200311_1134v2.txt
+-r input/Fortinet/FTB-TP-FG60E-65_20200416_1005.conf
 -p input/GCB_FortiGate.txt
--o output/output.csv
+-o output/FTB-TP-FG60E-65_20200416_1005.csv
 -d fortigate
 --debug

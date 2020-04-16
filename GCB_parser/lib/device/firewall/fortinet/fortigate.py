@@ -356,6 +356,9 @@ def config2List(patterns,config,debug_mode=False):
         line = line.rstrip() #ignore tailing space or newline
         if (len(line) == 0): # skip empty line
             continue # skip to next line
+        if (re.search("^#\w+", line)): # skip commented line
+            continue # skip to next line
+        
         preLevel = curLevel
         preNode = curNode
         curLevel = getLevel(line) # get the hierarchical position of this line 
