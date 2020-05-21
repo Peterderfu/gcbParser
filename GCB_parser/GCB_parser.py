@@ -91,7 +91,7 @@ for [gcb, configPattern] in patterns.items():
     result = fortigate.validateGCB(gcb, parsed,DEBUG_MODE,NONGCB)
     if result:
         for r in range(len(result)):
-            out = ",".join([gcb,"_".join(parsed[r]) if parsed else "",fortigate.VALIDATION_DESCRIP[result[r]]])
+            out = ",".join([gcb,",".join(parsed[r]) if parsed else "",fortigate.VALIDATION_DESCRIP[result[r]]])
             print(out)
             output.write(out+"\n")
     else:
