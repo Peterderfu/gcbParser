@@ -358,6 +358,10 @@ def config2List(patterns,config,debug_mode=False):
             continue # skip to next line
         if (re.search("^#\w+", line)): # skip commented line
             continue # skip to next line
+        if (re.search("^#\w+", line)): # skip commented line
+            continue # skip to next line
+        if (line.startswith("--More--")): # skip "--More--" seperator 
+            continue # skip to next line
         
         preLevel = curLevel
         preNode = curNode

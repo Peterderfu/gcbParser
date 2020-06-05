@@ -1,5 +1,5 @@
--r input/Fortinet/PSR_A_FW_011_20200521_1056.conf
+-r input/Fortinet/FG300C_config
 -p input/GCB_FortiGate.txt
--o output/PSR_A_FW_011_20200521_1056.csv
+-o output/FG300C_config.csv
 -d fortigate
 --debug
