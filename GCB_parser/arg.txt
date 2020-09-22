@@ -1,5 +1,5 @@
--r input/Fortinet/FG300C_config
+-r D:\工作\S10812084_經濟部109年「資安服務共用機制服務」專案（中小企業處）\訪談資料\FG201ETK19905255_20200707_1004.conf
 -p input/GCB_FortiGate.txt
--o output/FG300C_config.csv
+-o output/FG201ETK19905255_20200707_1004.csv
 -d fortigate
 --debug

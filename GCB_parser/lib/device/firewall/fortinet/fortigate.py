@@ -253,9 +253,18 @@ def validate_GCB_Fortinet_Fortigate_39(config):
 def validate_GCB_Fortinet_Fortigate_40(config):
 #pattern :　set name <community_name>
     if config and len(config)==3:
-        return VALID_SETTING if (len(config[-1].split(" ")) >= 2) else INVALID_SETTING
-    else:
-        return NOT_SETTING
+        set_community_cmd = config[-1].split(" ")
+        if (len(set_community_cmd) >= 2):
+            community = set_community_cmd[-1].lower()
+            if (community.startswith("public") or community.startswith("private")):
+                return INVALID_SETTING
+            else:
+                return VALID_SETTING
+#         
+#         return VALID_SETTING if (len(set_community_cmd) >= 2 and ) else INVALID_SETTING
+#     else:
+#         return NOT_SETTING
+    return NOT_SETTING
 @register
 def validate_GCB_Fortinet_Fortigate_41(config):
 #pattern :　 set query-v1-status disable 
